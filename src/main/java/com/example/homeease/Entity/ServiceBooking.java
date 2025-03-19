@@ -1,9 +1,14 @@
 package com.example.homeease.Entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Entity
 @Table(name = "service_booking")
 public class ServiceBooking {

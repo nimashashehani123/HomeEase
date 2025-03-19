@@ -15,7 +15,7 @@ public class Product {
     private Double price;
     private Boolean stockAvailability;
     private String contact;
-    private String location;
+    private String image;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
