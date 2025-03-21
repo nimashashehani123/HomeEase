@@ -1,5 +1,4 @@
 package com.example.homeease.Dto;
-
 import com.example.homeease.enums.UserRole;
 import lombok.Data;
 
@@ -16,13 +15,17 @@ public class UserDTO {
 
     private String password; // Password of the user
 
-    private UserRole role; // Role of the user (e.g., CUSTOMER, SERVICE_PROVIDER)
+    private UserRole role; // Role of the user (CUSTOMER, SERVICE_PROVIDER, ADMIN)
 
     private String phoneNumber; // Contact number of the user
 
     private String address; // Address of the user
 
-    private List<ProductDTO> products; // List of products added by the service provider (if applicable)
+    // Additional fields for Service Providers
+    private String serviceArea; // Optional: Service area for service providers
+
+    // Additional fields for Admins
+    private String adminLevel; // Optional: Admin level (e.g., Super Admin, Support Admin)
 
     private String verificationStatus; // Verification status of the user (e.g., Pending, Verified)
 

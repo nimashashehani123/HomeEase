@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
@@ -20,12 +21,12 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false) // Ensure this is not nullable
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole role;
+    private UserRole role; // Role of the user (CUSTOMER, SERVICE_PROVIDER, ADMIN)
 
     @Column(nullable = false)
     private String phoneNumber;
@@ -33,9 +34,13 @@ public class User {
     @Column(nullable = false)
     private String address;
 
-    @OneToMany(mappedBy = "serviceProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Product> products; // List of products added by the service provider
+    // Additional fields for Service Providers
+    @Column
+    private String serviceArea; // Optional: Service area for service providers
 
+    // Additional fields for Admins
+    @Column
+    private String adminLevel; // Optional: Admin level (e.g., Super Admin, Support Admin)
 
     @Column(name = "verification_status", nullable = false)
     private String verificationStatus = "Pending";

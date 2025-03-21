@@ -1,8 +1,11 @@
 package com.example.homeease.Controller;
 
+import com.example.homeease.Advisor.ResourceNotFoundException;
 import com.example.homeease.Entity.Service;
 import com.example.homeease.Service.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,27 +18,44 @@ public class ServiceController {
     private ServiceService serviceService;
 
     @PostMapping
-    public Service addService(@RequestBody Service service) {
-        return serviceService.addService(service);
+    public ResponseEntity<Service> addService(@RequestBody Service service) {
+        Service newService = serviceService.addService(service);
+        return new ResponseEntity<>(newService, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<Service> getAllServices() {
-        return serviceService.getAllServices();
+    public ResponseEntity<List<Service>> getAllServices() {
+        List<Service> services = serviceService.getAllServices();
+        return new ResponseEntity<>(services, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Service getServiceById(@PathVariable int id) {
-        return serviceService.getServiceById(id);
+    public ResponseEntity<Service> getServiceById(@PathVariable int id) {
+        try {
+            Service service = serviceService.getServiceById(id);
+            return new ResponseEntity<>(service, HttpStatus.OK);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/{id}")
-    public Service updateService(@PathVariable int id, @RequestBody Service service) {
-        return serviceService.updateService(id, service);
+    public ResponseEntity<Service> updateService(@PathVariable int id, @RequestBody Service service) {
+        try {
+            Service updatedService = serviceService.updateService(id, service);
+            return new ResponseEntity<>(updatedService, HttpStatus.OK);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteService(@PathVariable int id) {
-        serviceService.deleteService(id);
+    public ResponseEntity<Void> deleteService(@PathVariable int id) {
+        try {
+            serviceService.deleteService(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

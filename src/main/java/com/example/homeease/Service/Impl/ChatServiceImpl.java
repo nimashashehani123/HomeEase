@@ -1,5 +1,6 @@
 package com.example.homeease.Service.Impl;
 
+import com.example.homeease.Advisor.ResourceNotFoundException;
 import com.example.homeease.Entity.Chat;
 import com.example.homeease.Repo.ChatRepository;
 import com.example.homeease.Service.ChatService;
@@ -25,23 +26,27 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Chat getChatById(int id) {
-        return chatRepository.findById(id).orElse(null);
+    public Chat getChatById(int id) throws ResourceNotFoundException {
+        return chatRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Chat not found with id: " + id));
     }
 
     @Override
-    public Chat updateChat(int id, Chat chat) {
-        Chat existingChat = chatRepository.findById(id).orElse(null);
-        if (existingChat != null) {
-            existingChat.setUser1(chat.getUser1());
-            existingChat.setUser2(chat.getUser2());
-            return chatRepository.save(existingChat);
-        }
-        return null;
+    public Chat updateChat(int id, Chat chat) throws ResourceNotFoundException {
+        Chat existingChat = chatRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Chat not found with id: " + id));
+
+        // Update the existing chat with new details
+        existingChat.setUser1(chat.getUser1());
+        existingChat.setUser2(chat.getUser2());
+
+        return chatRepository.save(existingChat);
     }
 
     @Override
-    public void deleteChat(int id) {
-        chatRepository.deleteById(id);
+    public void deleteChat(int id) throws ResourceNotFoundException {
+        Chat chat = chatRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Chat not found with id: " + id));
+        chatRepository.delete(chat);
     }
 }

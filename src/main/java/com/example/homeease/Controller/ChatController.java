@@ -1,8 +1,11 @@
 package com.example.homeease.Controller;
 
+import com.example.homeease.Advisor.ResourceNotFoundException;
 import com.example.homeease.Entity.Chat;
 import com.example.homeease.Service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,27 +18,44 @@ public class ChatController {
     private ChatService chatService;
 
     @PostMapping
-    public Chat createChat(@RequestBody Chat chat) {
-        return chatService.createChat(chat);
+    public ResponseEntity<Chat> createChat(@RequestBody Chat chat) {
+        Chat newChat = chatService.createChat(chat);
+        return new ResponseEntity<>(newChat, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<Chat> getAllChats() {
-        return chatService.getAllChats();
+    public ResponseEntity<List<Chat>> getAllChats() {
+        List<Chat> chats = chatService.getAllChats();
+        return new ResponseEntity<>(chats, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Chat getChatById(@PathVariable int id) {
-        return chatService.getChatById(id);
+    public ResponseEntity<Chat> getChatById(@PathVariable int id) {
+        try {
+            Chat chat = chatService.getChatById(id);
+            return new ResponseEntity<>(chat, HttpStatus.OK);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/{id}")
-    public Chat updateChat(@PathVariable int id, @RequestBody Chat chat) {
-        return chatService.updateChat(id, chat);
+    public ResponseEntity<Chat> updateChat(@PathVariable int id, @RequestBody Chat chat) {
+        try {
+            Chat updatedChat = chatService.updateChat(id, chat);
+            return new ResponseEntity<>(updatedChat, HttpStatus.OK);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteChat(@PathVariable int id) {
-        chatService.deleteChat(id);
+    public ResponseEntity<Void> deleteChat(@PathVariable int id) {
+        try {
+            chatService.deleteChat(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

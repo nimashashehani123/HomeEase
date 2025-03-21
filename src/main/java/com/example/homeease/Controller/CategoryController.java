@@ -1,8 +1,11 @@
 package com.example.homeease.Controller;
 
+import com.example.homeease.Advisor.ResourceNotFoundException;
 import com.example.homeease.Entity.Category;
 import com.example.homeease.Service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,27 +18,44 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @PostMapping
-    public Category addCategory(@RequestBody Category category) {
-        return categoryService.addCategory(category);
+    public ResponseEntity<Category> addCategory(@RequestBody Category category) {
+        Category newCategory = categoryService.addCategory(category);
+        return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<Category> getAllCategories() {
-        return categoryService.getAllCategories();
+    public ResponseEntity<List<Category>> getAllCategories() {
+        List<Category> categories = categoryService.getAllCategories();
+        return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Category getCategoryById(@PathVariable int id) {
-        return categoryService.getCategoryById(id);
+    public ResponseEntity<Category> getCategoryById(@PathVariable int id) {
+        try {
+            Category category = categoryService.getCategoryById(id);
+            return new ResponseEntity<>(category, HttpStatus.OK);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/{id}")
-    public Category updateCategory(@PathVariable int id, @RequestBody Category category) {
-        return categoryService.updateCategory(id, category);
+    public ResponseEntity<Category> updateCategory(@PathVariable int id, @RequestBody Category category) {
+        try {
+            Category updatedCategory = categoryService.updateCategory(id, category);
+            return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCategory(@PathVariable int id) {
-        categoryService.deleteCategory(id);
+    public ResponseEntity<Void> deleteCategory(@PathVariable int id) {
+        try {
+            categoryService.deleteCategory(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

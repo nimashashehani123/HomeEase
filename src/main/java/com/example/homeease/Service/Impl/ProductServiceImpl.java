@@ -1,5 +1,6 @@
 package com.example.homeease.Service.Impl;
 
+import com.example.homeease.Advisor.ResourceNotFoundException;
 import com.example.homeease.Entity.Product;
 import com.example.homeease.Repo.ProductRepository;
 import com.example.homeease.Service.ProductService;
@@ -25,26 +26,30 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product getProductById(int id) {
-        return productRepository.findById(id).orElse(null);
+    public Product getProductById(int id) throws ResourceNotFoundException {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
     }
 
     @Override
-    public Product updateProduct(int id, Product product) {
-        Product existingProduct = productRepository.findById(id).orElse(null);
-        if (existingProduct != null) {
-            existingProduct.setProductName(product.getProductName());
-            existingProduct.setDescription(product.getDescription());
-            existingProduct.setPrice(product.getPrice());
-            existingProduct.setImage(product.getImage());
-            existingProduct.setContactNumber(product.getContactNumber());
-            return productRepository.save(existingProduct);
-        }
-        return null;
+    public Product updateProduct(int id, Product product) throws ResourceNotFoundException {
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+
+        // Update the existing product with new details
+        existingProduct.setProductName(product.getProductName());
+        existingProduct.setDescription(product.getDescription());
+        existingProduct.setPrice(product.getPrice());
+        existingProduct.setImage(product.getImage());
+        existingProduct.setContactNumber(product.getContactNumber());
+
+        return productRepository.save(existingProduct);
     }
 
     @Override
-    public void deleteProduct(int id) {
-        productRepository.deleteById(id);
+    public void deleteProduct(int id) throws ResourceNotFoundException {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+        productRepository.delete(product);
     }
 }

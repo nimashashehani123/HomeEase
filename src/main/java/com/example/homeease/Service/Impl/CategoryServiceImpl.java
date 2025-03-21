@@ -1,5 +1,6 @@
 package com.example.homeease.Service.Impl;
 
+import com.example.homeease.Advisor.ResourceNotFoundException;
 import com.example.homeease.Entity.Category;
 import com.example.homeease.Repo.CategoryRepository;
 import com.example.homeease.Service.CategoryService;
@@ -25,23 +26,27 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category getCategoryById(int id) {
-        return categoryRepository.findById(id).orElse(null);
+    public Category getCategoryById(int id) throws ResourceNotFoundException {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
     }
 
     @Override
-    public Category updateCategory(int id, Category category) {
-        Category existingCategory = categoryRepository.findById(id).orElse(null);
-        if (existingCategory != null) {
-            existingCategory.setCategoryName(category.getCategoryName());
-            existingCategory.setImage(category.getImage());
-            return categoryRepository.save(existingCategory);
-        }
-        return null;
+    public Category updateCategory(int id, Category category) throws ResourceNotFoundException {
+        Category existingCategory = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
+
+        // Update the existing category with new details
+        existingCategory.setCategoryName(category.getCategoryName());
+        existingCategory.setImage(category.getImage());
+
+        return categoryRepository.save(existingCategory);
     }
 
     @Override
-    public void deleteCategory(int id) {
-        categoryRepository.deleteById(id);
+    public void deleteCategory(int id) throws ResourceNotFoundException {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
+        categoryRepository.delete(category);
     }
 }

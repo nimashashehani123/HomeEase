@@ -1,5 +1,6 @@
 package com.example.homeease.Service.Impl;
 
+import com.example.homeease.Advisor.ResourceNotFoundException;
 import com.example.homeease.Entity.User;
 import com.example.homeease.Repo.UserRepository;
 import com.example.homeease.Service.UserService;
@@ -25,30 +26,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(int id) {
-        return userRepository.findById(id).orElse(null);
+    public User getUserById(int userId) throws ResourceNotFoundException {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
     }
 
     @Override
-    public User updateUser(int id, User user) {
-        User existingUser = userRepository.findById(id).orElse(null);
-        if (existingUser != null) {
-            existingUser.setName(user.getName());
-            existingUser.setEmail(user.getEmail());
-            existingUser.setPassword(user.getPassword());
-            existingUser.setRole(user.getRole());
-            existingUser.setPhoneNumber(user.getPhoneNumber());
-            existingUser.setAddress(user.getAddress());
-            existingUser.setVerificationStatus(user.getVerificationStatus());
-            existingUser.setIdProofPath(user.getIdProofPath());
-            existingUser.setAddressProofPath(user.getAddressProofPath());
-            return userRepository.save(existingUser);
-        }
-        return null;
+    public void deleteUser(int userId) throws ResourceNotFoundException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        userRepository.delete(user);
     }
 
     @Override
-    public void deleteUser(int id) {
-        userRepository.deleteById(id);
+    public User updateUser(int userId, User userDetails) throws ResourceNotFoundException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        // Update user details
+        user.setName(userDetails.getName());
+        user.setEmail(userDetails.getEmail());
+        user.setPassword(userDetails.getPassword());
+        user.setPhoneNumber(userDetails.getPhoneNumber());
+        user.setAddress(userDetails.getAddress());
+        user.setRole(userDetails.getRole());
+        user.setServiceArea(userDetails.getServiceArea());
+        user.setAdminLevel(userDetails.getAdminLevel());
+        user.setVerificationStatus(userDetails.getVerificationStatus());
+        user.setIdProofPath(userDetails.getIdProofPath());
+        user.setAddressProofPath(userDetails.getAddressProofPath());
+
+        return userRepository.save(user);
     }
 }
