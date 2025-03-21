@@ -1,6 +1,6 @@
 package com.example.homeease.Controller;
 
-import com.example.homeease.Dto.ServiceDTO;
+import com.example.homeease.Entity.Service;
 import com.example.homeease.Service.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,38 +14,28 @@ public class ServiceController {
     @Autowired
     private ServiceService serviceService;
 
-    @PostMapping("/add")
-    public ServiceDTO addService(@RequestBody ServiceDTO serviceDTO) {
-        return serviceService.addService(serviceDTO);
+    @PostMapping
+    public Service addService(@RequestBody Service service) {
+        return serviceService.addService(service);
     }
 
-    @PutMapping("/update")
-    public ServiceDTO updateService(@RequestBody ServiceDTO serviceDTO) {
-        return serviceService.updateService(serviceDTO);
-    }
-
-    @DeleteMapping("/delete/{serviceId}")
-    public void deleteService(@PathVariable int serviceId) {
-        serviceService.deleteService(serviceId);
-    }
-
-    @GetMapping("/{serviceId}")
-    public ServiceDTO getServiceById(@PathVariable int serviceId) {
-        return serviceService.getServiceById(serviceId);
-    }
-
-    @GetMapping("/all")
-    public List<ServiceDTO> getAllServices() {
+    @GetMapping
+    public List<Service> getAllServices() {
         return serviceService.getAllServices();
     }
 
-    @GetMapping("/by-category/{categoryId}")
-    public List<ServiceDTO> getServicesByCategory(@PathVariable int categoryId) {
-        return serviceService.getServicesByCategory(categoryId);
+    @GetMapping("/{id}")
+    public Service getServiceById(@PathVariable int id) {
+        return serviceService.getServiceById(id);
     }
 
-    @GetMapping("/by-provider/{providerId}")
-    public List<ServiceDTO> getServicesByProvider(@PathVariable int providerId) {
-        return serviceService.getServicesByProvider(providerId);
+    @PutMapping("/{id}")
+    public Service updateService(@PathVariable int id, @RequestBody Service service) {
+        return serviceService.updateService(id, service);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteService(@PathVariable int id) {
+        serviceService.deleteService(id);
     }
 }

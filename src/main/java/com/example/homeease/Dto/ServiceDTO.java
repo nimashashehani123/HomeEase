@@ -3,11 +3,12 @@ import lombok.Data;
 
 @Data
 public class ServiceDTO {
-    private int serviceId;
-    private String serviceName;
-    private String description;
-    private double price;
-    private String image; // Path to the service image
-    private int categoryId; // Associated category ID
-    private int serviceProviderId; // Associated service provider ID
+    private int serviceId; // Unique identifier for the service
+    private String serviceName; // Name of the service
+    private String description; // Description of the service
+    private double fixedPrice; // Fixed price for the service
+    private double hourlyRate; // Hourly rate for time-based pricing
+    private String image; // Optional field for service image
+    private int categoryId; // ID of the associated category
+    private int serviceProviderId; // ID of the associated service provider
 }

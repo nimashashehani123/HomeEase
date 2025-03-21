@@ -1,6 +1,5 @@
 package com.example.homeease.Service.Impl;
-import com.example.homeease.Advisor.ResourceNotFoundException;
-import com.example.homeease.Dto.NotificationDTO;
+
 import com.example.homeease.Entity.Notification;
 import com.example.homeease.Repo.NotificationRepository;
 import com.example.homeease.Service.NotificationService;
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -17,38 +15,32 @@ public class NotificationServiceImpl implements NotificationService {
     private NotificationRepository notificationRepository;
 
     @Override
-    public NotificationDTO addNotification(NotificationDTO notificationDTO) {
-        Notification notification = new Notification();
-        // Set user, message, and timestamp
-        Notification savedNotification = notificationRepository.save(notification);
-        return convertToNotificationDTO(savedNotification);
+    public Notification addNotification(Notification notification) {
+        return notificationRepository.save(notification);
     }
 
     @Override
-    public void deleteNotification(int notificationId) {
-        notificationRepository.deleteById(notificationId);
+    public List<Notification> getAllNotifications() {
+        return notificationRepository.findAll();
     }
 
     @Override
-    public NotificationDTO getNotificationById(int notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
-        return convertToNotificationDTO(notification);
+    public Notification getNotificationById(int id) {
+        return notificationRepository.findById(id).orElse(null);
     }
 
     @Override
-    public List<NotificationDTO> getNotificationsByUser(int userId) {
-        return notificationRepository.findByUser_UserId(userId).stream()
-                .map(this::convertToNotificationDTO)
-                .collect(Collectors.toList());
+    public Notification updateNotification(int id, Notification notification) {
+        Notification existingNotification = notificationRepository.findById(id).orElse(null);
+        if (existingNotification != null) {
+            existingNotification.setMessage(notification.getMessage());
+            return notificationRepository.save(existingNotification);
+        }
+        return null;
     }
 
-    private NotificationDTO convertToNotificationDTO(Notification notification) {
-        NotificationDTO notificationDTO = new NotificationDTO();
-        notificationDTO.setNotificationId(notification.getNotificationId());
-        notificationDTO.setUserId(notification.getUser().getUserId());
-        notificationDTO.setMessage(notification.getMessage());
-        notificationDTO.setTimestamp(notification.getTimestamp());
-        return notificationDTO;
+    @Override
+    public void deleteNotification(int id) {
+        notificationRepository.deleteById(id);
     }
 }

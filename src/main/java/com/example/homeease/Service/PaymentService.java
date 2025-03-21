@@ -1,12 +1,12 @@
 package com.example.homeease.Service;
-import com.example.homeease.Dto.PaymentDTO;
 
+import com.example.homeease.Entity.Payment;
 import java.util.List;
 
 public interface PaymentService {
-    PaymentDTO createPayment(PaymentDTO paymentDTO);
-    void deletePayment(int paymentId);
-    PaymentDTO getPaymentById(int paymentId);
-    List<PaymentDTO> getPaymentsByBooking(int bookingId);
-    List<PaymentDTO> getPaymentsByStatus(String status);
+    Payment createPayment(Payment payment);
+    List<Payment> getAllPayments();
+    Payment getPaymentById(int id);
+    Payment updatePayment(int id, Payment payment);
+    void deletePayment(int id);
 }

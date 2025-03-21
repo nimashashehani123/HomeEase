@@ -1,6 +1,6 @@
 package com.example.homeease.Controller;
 
-import com.example.homeease.Dto.BookingDTO;
+import com.example.homeease.Entity.Booking;
 import com.example.homeease.Service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -8,39 +8,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/bookings")
+@RequestMapping("/api/v1/bookings")
 public class BookingController {
 
     @Autowired
     private BookingService bookingService;
 
-    @PostMapping("/create")
-    public BookingDTO createBooking(@RequestBody BookingDTO bookingDTO) {
-        return bookingService.createBooking(bookingDTO);
+    @PostMapping
+    public Booking createBooking(@RequestBody Booking booking) {
+        return bookingService.createBooking(booking);
     }
 
-    @PutMapping("/update-status/{bookingId}")
-    public BookingDTO updateBookingStatus(@PathVariable int bookingId, @RequestParam String status) {
-        return bookingService.updateBookingStatus(bookingId, status);
+    @GetMapping
+    public List<Booking> getAllBookings() {
+        return bookingService.getAllBookings();
     }
 
-    @DeleteMapping("/delete/{bookingId}")
-    public void deleteBooking(@PathVariable int bookingId) {
-        bookingService.deleteBooking(bookingId);
+    @GetMapping("/{id}")
+    public Booking getBookingById(@PathVariable int id) {
+        return bookingService.getBookingById(id);
     }
 
-    @GetMapping("/{bookingId}")
-    public BookingDTO getBookingById(@PathVariable int bookingId) {
-        return bookingService.getBookingById(bookingId);
+    @PutMapping("/{id}")
+    public Booking updateBooking(@PathVariable int id, @RequestBody Booking booking) {
+        return bookingService.updateBooking(id, booking);
     }
 
-    @GetMapping("/by-customer/{customerId}")
-    public List<BookingDTO> getBookingsByCustomer(@PathVariable int customerId) {
-        return bookingService.getBookingsByCustomer(customerId);
-    }
-
-    @GetMapping("/by-provider/{providerId}")
-    public List<BookingDTO> getBookingsByProvider(@PathVariable int providerId) {
-        return bookingService.getBookingsByProvider(providerId);
+    @DeleteMapping("/{id}")
+    public void deleteBooking(@PathVariable int id) {
+        bookingService.deleteBooking(id);
     }
 }

@@ -1,14 +1,12 @@
 package com.example.homeease.Service.Impl;
 
-import com.example.homeease.Advisor.ResourceNotFoundException;
-import com.example.homeease.Dto.ServiceDTO;
-import com.example.homeease.Entity.Service; // Import the Service entity
+import com.example.homeease.Entity.Service;
 import com.example.homeease.Repo.ServiceRepository;
 import com.example.homeease.Service.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+
 import java.util.List;
-import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 public class ServiceServiceImpl implements ServiceService {
@@ -17,72 +15,36 @@ public class ServiceServiceImpl implements ServiceService {
     private ServiceRepository serviceRepository;
 
     @Override
-    public ServiceDTO addService(ServiceDTO serviceDTO) {
-        Service service = new Service(); // Use the simple class name
-        service.setServiceName(serviceDTO.getServiceName());
-        service.setDescription(serviceDTO.getDescription());
-        service.setPrice(serviceDTO.getPrice());
-        service.setImage(serviceDTO.getImage());
-        // Set category and service provider (fetch from repository if needed)
-        Service savedService = serviceRepository.save(service);
-        return convertToServiceDTO(savedService);
+    public Service addService(Service service) {
+        return serviceRepository.save(service);
     }
 
     @Override
-    public ServiceDTO updateService(ServiceDTO serviceDTO) {
-        Service service = serviceRepository.findById(serviceDTO.getServiceId())
-                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
-        service.setServiceName(serviceDTO.getServiceName());
-        service.setDescription(serviceDTO.getDescription());
-        service.setPrice(serviceDTO.getPrice());
-        service.setImage(serviceDTO.getImage());
-        Service updatedService = serviceRepository.save(service);
-        return convertToServiceDTO(updatedService);
+    public List<Service> getAllServices() {
+        return serviceRepository.findAll();
     }
 
     @Override
-    public void deleteService(int serviceId) {
-        serviceRepository.deleteById(serviceId);
+    public Service getServiceById(int id) {
+        return serviceRepository.findById(id).orElse(null);
     }
 
     @Override
-    public ServiceDTO getServiceById(int serviceId) {
-        Service service = serviceRepository.findById(serviceId)
-                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
-        return convertToServiceDTO(service);
+    public Service updateService(int id, Service service) {
+        Service existingService = serviceRepository.findById(id).orElse(null);
+        if (existingService != null) {
+            existingService.setServiceName(service.getServiceName());
+            existingService.setDescription(service.getDescription());
+            existingService.setFixedPrice(service.getFixedPrice());
+            existingService.setHourlyRate(service.getHourlyRate());
+            existingService.setImage(service.getImage());
+            return serviceRepository.save(existingService);
+        }
+        return null;
     }
 
     @Override
-    public List<ServiceDTO> getAllServices() {
-        return serviceRepository.findAll().stream()
-                .map(this::convertToServiceDTO)
-                .collect(Collectors.toList());
+    public void deleteService(int id) {
+        serviceRepository.deleteById(id);
     }
-
-    @Override
-    public List<ServiceDTO> getServicesByCategory(int categoryId) {
-        return serviceRepository.findByCategory_CategoryId(categoryId).stream()
-                .map(this::convertToServiceDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ServiceDTO> getServicesByProvider(int providerId) {
-        return serviceRepository.findByServiceProvider_UserId(providerId).stream()
-                .map(this::convertToServiceDTO)
-                .collect(Collectors.toList());
-    }
-
-    private ServiceDTO convertToServiceDTO(Service service) {
-        ServiceDTO serviceDTO = new ServiceDTO();
-        serviceDTO.setServiceId(service.getServiceId());
-        serviceDTO.setServiceName(service.getServiceName());
-        serviceDTO.setDescription(service.getDescription());
-        serviceDTO.setPrice(service.getPrice());
-        serviceDTO.setImage(service.getImage());
-        serviceDTO.setCategoryId(service.getCategory().getCategoryId());
-        serviceDTO.setServiceProviderId(service.getServiceProvider().getUserId());
-        return serviceDTO;
-    }
-
 }

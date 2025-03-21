@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 @Table(name = "services")
 public class Service {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int serviceId;
@@ -17,17 +18,20 @@ public class Service {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    private double price;
+    @Column(name = "fixed_price")
+    private double fixedPrice; // Fixed price for the service
+
+    @Column(name = "hourly_rate")
+    private double hourlyRate; // Hourly rate for time-based pricing
 
     @Column
-    private String image;
+    private String image; // Optional field for service image
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
-    private Category category; // Relationship with Category
+    private Category category; // Many-to-one relationship with Category
 
     @ManyToOne
     @JoinColumn(name = "service_provider_id", nullable = false)
-    private User serviceProvider; // Relationship with User (service provider)
+    private User serviceProvider; // Many-to-one relationship with User (service provider)
 }

@@ -4,6 +4,8 @@ import com.example.homeease.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Data
 @Table(name = "users")
@@ -18,12 +20,12 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false) // Ensure this is not nullable
     private String password;
 
-    @Enumerated(EnumType.STRING) // Store the enum as a string in the database
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole role; // Use the UserRole enum
+    private UserRole role;
 
     @Column(nullable = false)
     private String phoneNumber;
@@ -31,12 +33,16 @@ public class User {
     @Column(nullable = false)
     private String address;
 
+    @OneToMany(mappedBy = "serviceProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Product> products; // List of products added by the service provider
+
+
     @Column(name = "verification_status", nullable = false)
-    private String verificationStatus = "Pending"; // Pending, Verified, Rejected
+    private String verificationStatus = "Pending";
 
-    @Column(name = "id_proof_path")
-    private String idProofPath; // Path to ID proof document
+    @Column(name = "id_proof_path", nullable = true) // Optional for all users
+    private String idProofPath;
 
-    @Column(name = "address_proof_path")
-    private String addressProofPath; // Path to address proof document
+    @Column(name = "address_proof_path", nullable = true) // Optional for all users
+    private String addressProofPath;
 }

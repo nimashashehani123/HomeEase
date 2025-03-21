@@ -1,6 +1,6 @@
 package com.example.homeease.Controller;
 
-import com.example.homeease.Dto.NotificationDTO;
+import com.example.homeease.Entity.Notification;
 import com.example.homeease.Service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,23 +14,28 @@ public class NotificationController {
     @Autowired
     private NotificationService notificationService;
 
-    @PostMapping("/add")
-    public NotificationDTO addNotification(@RequestBody NotificationDTO notificationDTO) {
-        return notificationService.addNotification(notificationDTO);
+    @PostMapping
+    public Notification addNotification(@RequestBody Notification notification) {
+        return notificationService.addNotification(notification);
     }
 
-    @DeleteMapping("/delete/{notificationId}")
-    public void deleteNotification(@PathVariable int notificationId) {
-        notificationService.deleteNotification(notificationId);
+    @GetMapping
+    public List<Notification> getAllNotifications() {
+        return notificationService.getAllNotifications();
     }
 
-    @GetMapping("/{notificationId}")
-    public NotificationDTO getNotificationById(@PathVariable int notificationId) {
-        return notificationService.getNotificationById(notificationId);
+    @GetMapping("/{id}")
+    public Notification getNotificationById(@PathVariable int id) {
+        return notificationService.getNotificationById(id);
     }
 
-    @GetMapping("/by-user/{userId}")
-    public List<NotificationDTO> getNotificationsByUser(@PathVariable int userId) {
-        return notificationService.getNotificationsByUser(userId);
+    @PutMapping("/{id}")
+    public Notification updateNotification(@PathVariable int id, @RequestBody Notification notification) {
+        return notificationService.updateNotification(id, notification);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteNotification(@PathVariable int id) {
+        notificationService.deleteNotification(id);
     }
 }

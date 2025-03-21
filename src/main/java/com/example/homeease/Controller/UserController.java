@@ -1,6 +1,6 @@
 package com.example.homeease.Controller;
 
-import com.example.homeease.Dto.UserDTO;
+import com.example.homeease.Entity.User;
 import com.example.homeease.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,38 +14,28 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/register")
-    public UserDTO registerUser(@RequestBody UserDTO userDTO) {
-        return userService.registerUser(userDTO);
+    @PostMapping
+    public User addUser(@RequestBody User user) {
+        return userService.addUser(user);
     }
 
-    @PostMapping("/login")
-    public UserDTO loginUser(@RequestParam String email, @RequestParam String password) {
-        return userService.loginUser(email, password);
-    }
-
-    @PutMapping("/update")
-    public UserDTO updateUser(@RequestBody UserDTO userDTO) {
-        return userService.updateUser(userDTO);
-    }
-
-    @DeleteMapping("/delete/{userId}")
-    public void deleteUser(@PathVariable int userId) {
-        userService.deleteUser(userId);
-    }
-
-    @GetMapping("/{userId}")
-    public UserDTO getUserById(@PathVariable int userId) {
-        return userService.getUserById(userId);
-    }
-
-    @GetMapping("/all")
-    public List<UserDTO> getAllUsers() {
+    @GetMapping
+    public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
-    @PutMapping("/verify/{userId}")
-    public UserDTO verifyServiceProvider(@PathVariable int userId, @RequestParam String status) {
-        return userService.verifyServiceProvider(userId, status);
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable int id) {
+        return userService.getUserById(id);
+    }
+
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable int id, @RequestBody User user) {
+        return userService.updateUser(id, user);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable int id) {
+        userService.deleteUser(id);
     }
 }

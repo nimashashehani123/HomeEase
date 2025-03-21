@@ -2,13 +2,12 @@ package com.example.homeease.Repo;
 
 import com.example.homeease.Entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
-    // Find reviews by service
-    List<Review> findByBooking_Service_ServiceId(int serviceId);
-
-    // Find reviews by customer
-    List<Review> findByBooking_Customer_UserId(int customerId);
+    // Custom query methods can be added here
+    List<Review> findByBooking_BookingId(int bookingId); // Find reviews by booking ID
 }

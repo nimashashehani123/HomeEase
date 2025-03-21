@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class CategoryDTO {
-    private int categoryId;
-    private String categoryName; // Plumbing, Electrical, Cleaning, etc.
-    private String image; // Path to the category image
+    private int categoryId; // Unique identifier for the category
+    private String categoryName; // Name of the category
+    private String image; // Optional field for category image
 }

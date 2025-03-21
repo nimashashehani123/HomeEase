@@ -1,6 +1,6 @@
 package com.example.homeease.Controller;
 
-import com.example.homeease.Dto.CategoryDTO;
+import com.example.homeease.Entity.Category;
 import com.example.homeease.Service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,28 +14,28 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @PostMapping("/add")
-    public CategoryDTO addCategory(@RequestBody CategoryDTO categoryDTO) {
-        return categoryService.addCategory(categoryDTO);
+    @PostMapping
+    public Category addCategory(@RequestBody Category category) {
+        return categoryService.addCategory(category);
     }
 
-    @PutMapping("/update")
-    public CategoryDTO updateCategory(@RequestBody CategoryDTO categoryDTO) {
-        return categoryService.updateCategory(categoryDTO);
-    }
-
-    @DeleteMapping("/delete/{categoryId}")
-    public void deleteCategory(@PathVariable int categoryId) {
-        categoryService.deleteCategory(categoryId);
-    }
-
-    @GetMapping("/{categoryId}")
-    public CategoryDTO getCategoryById(@PathVariable int categoryId) {
-        return categoryService.getCategoryById(categoryId);
-    }
-
-    @GetMapping("/all")
-    public List<CategoryDTO> getAllCategories() {
+    @GetMapping
+    public List<Category> getAllCategories() {
         return categoryService.getAllCategories();
+    }
+
+    @GetMapping("/{id}")
+    public Category getCategoryById(@PathVariable int id) {
+        return categoryService.getCategoryById(id);
+    }
+
+    @PutMapping("/{id}")
+    public Category updateCategory(@PathVariable int id, @RequestBody Category category) {
+        return categoryService.updateCategory(id, category);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteCategory(@PathVariable int id) {
+        categoryService.deleteCategory(id);
     }
 }
