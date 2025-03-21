@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab-Based Registration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .input-field {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #3b82f6;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background-color: #2563eb;
+    }
+  </style>
+
+</head>
+<body class="flex justify-center items-center min-h-screen bg-gray-100">
+
+<div class="w-full max-w-lg p-6 bg-white shadow-lg rounded-lg">
+  <!-- Tabs -->
+  <div class="flex justify-around border-b">
+    <button class="tab-btn py-2 px-4 font-semibold text-gray-700 border-b-2 border-transparent hover:border-blue-500" onclick="openTab('customer')">Customer</button>
+    <button class="tab-btn py-2 px-4 font-semibold text-gray-700 border-b-2 border-transparent hover:border-blue-500" onclick="openTab('provider')">Service Provider</button>
+  </div>
+    <!-- Customer Form -->
+    <form id="customer" class="tab-content hidden">
+      <input type="text" placeholder="Full Name" class="input-field">
+      <input type="text" placeholder="Username" class="input-field">
+      <input type="email" placeholder="Email" class="input-field">
+      <input type="password" placeholder="Password" class="input-field">
+      <input type="text" placeholder="Contact" class="input-field">
+      <input type="text" placeholder="Location" class="input-field">
+      <button class="submit-btn">Register</button>
+    </form>
+
+    <!-- Service Provider Form -->
+    <form id="provider" class="tab-content hidden">
+      <input type="text" placeholder="Full Name" class="input-field">
+      <input type="text" placeholder="Username" class="input-field">
+      <input type="email" placeholder="Email" class="input-field">
+      <input type="password" placeholder="Password" class="input-field">
+      <input type="text" placeholder="Contact" class="input-field">
+      <input type="text" placeholder="Availability" class="input-field">
+      <input type="text" placeholder="Location" class="input-field">
+      <button class="submit-btn">Register</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openTab(tabId) {
+    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.add("hidden"));
+    document.getElementById(tabId).classList.remove("hidden");
+
+    document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("border-blue-500"));
+    event.target.classList.add("border-blue-500");
+  }
+
+  // Set default active tab
+  openTab('customer');
+</script>
+</body>
+</html>
