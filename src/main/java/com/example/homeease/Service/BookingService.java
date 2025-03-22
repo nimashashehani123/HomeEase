@@ -1,14 +1,12 @@
 package com.example.homeease.Service;
 
-import com.example.homeease.Advisor.ResourceNotFoundException;
-import com.example.homeease.Entity.Booking;
-
-import java.util.List;
+import com.example.homeease.Dto.ResponseDTO;
+import com.example.homeease.Dto.BookingDTO;
 
 public interface BookingService {
-    Booking createBooking(Booking booking);
-    List<Booking> getAllBookings();
-    Booking getBookingById(int id) throws ResourceNotFoundException;
-    Booking updateBooking(int id, Booking booking) throws ResourceNotFoundException;
-    void deleteBooking(int id) throws ResourceNotFoundException;
+    ResponseDTO createBooking(BookingDTO bookingDTO);
+    ResponseDTO getAllBookings();
+    ResponseDTO getBookingById(int bookingId);
+    ResponseDTO updateBooking(int bookingId, BookingDTO bookingDTO);
+    ResponseDTO deleteBooking(int bookingId);
 }

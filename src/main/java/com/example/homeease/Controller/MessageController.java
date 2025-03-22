@@ -1,14 +1,12 @@
 package com.example.homeease.Controller;
 
-import com.example.homeease.Advisor.ResourceNotFoundException;
-import com.example.homeease.Entity.Message;
+import com.example.homeease.Dto.MessageDTO;
+import com.example.homeease.Dto.ResponseDTO;
 import com.example.homeease.Service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/messages")
@@ -18,44 +16,32 @@ public class MessageController {
     private MessageService messageService;
 
     @PostMapping
-    public ResponseEntity<Message> sendMessage(@RequestBody Message message) {
-        Message newMessage = messageService.sendMessage(message);
-        return new ResponseEntity<>(newMessage, HttpStatus.CREATED);
+    public ResponseEntity<ResponseDTO> sendMessage(@RequestBody MessageDTO messageDTO) {
+        ResponseDTO response = messageService.sendMessage(messageDTO);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
     @GetMapping
-    public ResponseEntity<List<Message>> getAllMessages() {
-        List<Message> messages = messageService.getAllMessages();
-        return new ResponseEntity<>(messages, HttpStatus.OK);
+    public ResponseEntity<ResponseDTO> getAllMessages() {
+        ResponseDTO response = messageService.getAllMessages();
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Message> getMessageById(@PathVariable int id) {
-        try {
-            Message message = messageService.getMessageById(id);
-            return new ResponseEntity<>(message, HttpStatus.OK);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<ResponseDTO> getMessageById(@PathVariable int id) {
+        ResponseDTO response = messageService.getMessageById(id);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Message> updateMessage(@PathVariable int id, @RequestBody Message message) {
-        try {
-            Message updatedMessage = messageService.updateMessage(id, message);
-            return new ResponseEntity<>(updatedMessage, HttpStatus.OK);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<ResponseDTO> updateMessage(@PathVariable int id, @RequestBody MessageDTO messageDTO) {
+        ResponseDTO response = messageService.updateMessage(id, messageDTO);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMessage(@PathVariable int id) {
-        try {
-            messageService.deleteMessage(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<ResponseDTO> deleteMessage(@PathVariable int id) {
+        ResponseDTO response = messageService.deleteMessage(id);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 }

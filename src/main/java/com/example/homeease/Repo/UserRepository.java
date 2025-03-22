@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Integer> {
     // Custom query methods can be added here
     Optional<User> findByEmail(String email); // Find user by email
+    boolean existsByEmail(String email);
     List<User> findByRole(UserRole role); // Find users by role (e.g., CUSTOMER, SERVICE_PROVIDER)
     List<User> findByVerificationStatus(String verificationStatus); // Find users by verification status
 }

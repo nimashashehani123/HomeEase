@@ -1,12 +1,19 @@
 package com.example.homeease.Service.Impl;
 
 import com.example.homeease.Advisor.ResourceNotFoundException;
+import com.example.homeease.Dto.ResponseDTO;
+import com.example.homeease.Dto.NotificationDTO;
 import com.example.homeease.Entity.Notification;
+import com.example.homeease.Entity.User;
 import com.example.homeease.Repo.NotificationRepository;
+import com.example.homeease.Repo.UserRepository;
 import com.example.homeease.Service.NotificationService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -15,37 +22,72 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
-    public Notification addNotification(Notification notification) {
-        return notificationRepository.save(notification);
+    public ResponseDTO addNotification(NotificationDTO notificationDTO) {
+        if (notificationRepository.existsById(notificationDTO.getNotificationId())) {
+            return new ResponseDTO(400, "Notification already exists with id: " + notificationDTO.getNotificationId(), null);
+        }
+
+        // Fetch the user from the database
+        User user = userRepository.findById(notificationDTO.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + notificationDTO.getUserId()));
+
+        // Map NotificationDTO to Notification entity
+        Notification notification = modelMapper.map(notificationDTO, Notification.class);
+        notification.setUser(user); // Set the user
+        notification.setTimestamp(LocalDateTime.now()); // Set the current timestamp
+
+        notificationRepository.save(notification);
+        return new ResponseDTO(200, "Notification added successfully", notificationDTO);
     }
 
     @Override
-    public List<Notification> getAllNotifications() {
-        return notificationRepository.findAll();
+    public ResponseDTO getAllNotifications() {
+        List<NotificationDTO> notificationList = modelMapper.map(notificationRepository.findAll(),
+                new TypeToken<List<NotificationDTO>>() {}.getType());
+        return new ResponseDTO(200, "Notifications retrieved successfully", notificationList);
     }
 
     @Override
-    public Notification getNotificationById(int id) throws ResourceNotFoundException {
-        return notificationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + id));
+    public ResponseDTO getNotificationById(int notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + notificationId));
+        NotificationDTO notificationDTO = modelMapper.map(notification, NotificationDTO.class);
+        notificationDTO.setUserId(notification.getUser().getUserId()); // Set user ID
+        return new ResponseDTO(200, "Notification retrieved successfully", notificationDTO);
     }
 
     @Override
-    public Notification updateNotification(int id, Notification notification) throws ResourceNotFoundException {
-        Notification existingNotification = notificationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + id));
+    public ResponseDTO updateNotification(int notificationId, NotificationDTO notificationDTO) {
+        if (!notificationRepository.existsById(notificationId)) {
+            return new ResponseDTO(404, "Notification not found with id: " + notificationId, null);
+        }
 
-        // Update the existing notification with new details
-        existingNotification.setMessage(notification.getMessage());
+        // Fetch the user from the database
+        User user = userRepository.findById(notificationDTO.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + notificationDTO.getUserId()));
 
-        return notificationRepository.save(existingNotification);
+        // Map NotificationDTO to Notification entity
+        Notification notification = modelMapper.map(notificationDTO, Notification.class);
+        notification.setNotificationId(notificationId); // Ensure the ID is preserved
+        notification.setUser(user); // Set the user
+
+        notificationRepository.save(notification);
+        return new ResponseDTO(200, "Notification updated successfully", notificationDTO);
     }
 
     @Override
-    public void deleteNotification(int id) throws ResourceNotFoundException {
-        Notification notification = notificationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + id));
-        notificationRepository.delete(notification);
+    public ResponseDTO deleteNotification(int notificationId) {
+        if (!notificationRepository.existsById(notificationId)) {
+            return new ResponseDTO(404, "Notification not found with id: " + notificationId, null);
+        }
+        notificationRepository.deleteById(notificationId);
+        return new ResponseDTO(200, "Notification deleted successfully", null);
     }
 }

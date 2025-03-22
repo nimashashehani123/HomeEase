@@ -1,14 +1,12 @@
 package com.example.homeease.Service;
 
-import com.example.homeease.Advisor.ResourceNotFoundException;
-import com.example.homeease.Entity.Chat;
-
-import java.util.List;
+import com.example.homeease.Dto.ResponseDTO;
+import com.example.homeease.Dto.ChatDTO;
 
 public interface ChatService {
-    Chat createChat(Chat chat);
-    List<Chat> getAllChats();
-    Chat getChatById(int id) throws ResourceNotFoundException;
-    Chat updateChat(int id, Chat chat) throws ResourceNotFoundException;
-    void deleteChat(int id) throws ResourceNotFoundException;
+    ResponseDTO createChat(ChatDTO chatDTO);
+    ResponseDTO getAllChats();
+    ResponseDTO getChatById(int chatId);
+    ResponseDTO updateChat(int chatId, ChatDTO chatDTO);
+    ResponseDTO deleteChat(int chatId);
 }

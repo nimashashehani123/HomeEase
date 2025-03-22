@@ -1,9 +1,15 @@
 package com.example.homeease.Service.Impl;
 
 import com.example.homeease.Advisor.ResourceNotFoundException;
+import com.example.homeease.Dto.ResponseDTO;
+import com.example.homeease.Dto.ReviewDTO;
 import com.example.homeease.Entity.Review;
+import com.example.homeease.Entity.Booking;
 import com.example.homeease.Repo.ReviewRepository;
+import com.example.homeease.Repo.BookingRepository;
 import com.example.homeease.Service.ReviewService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,38 +21,71 @@ public class ReviewServiceImpl implements ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired
+    private BookingRepository bookingRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
-    public Review addReview(Review review) {
-        return reviewRepository.save(review);
+    public ResponseDTO addReview(ReviewDTO reviewDTO) {
+        if (reviewRepository.existsById(reviewDTO.getReviewId())) {
+            return new ResponseDTO(400, "Review already exists with id: " + reviewDTO.getReviewId(), null);
+        }
+
+        // Fetch the booking from the database
+        Booking booking = bookingRepository.findById(reviewDTO.getBookingId())
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + reviewDTO.getBookingId()));
+
+        // Map ReviewDTO to Review entity
+        Review review = modelMapper.map(reviewDTO, Review.class);
+        review.setBooking(booking); // Set the booking
+
+        reviewRepository.save(review);
+        return new ResponseDTO(200, "Review added successfully", reviewDTO);
     }
 
     @Override
-    public List<Review> getAllReviews() {
-        return reviewRepository.findAll();
+    public ResponseDTO getAllReviews() {
+        List<ReviewDTO> reviewList = modelMapper.map(reviewRepository.findAll(),
+                new TypeToken<List<ReviewDTO>>() {}.getType());
+        return new ResponseDTO(200, "Reviews retrieved successfully", reviewList);
     }
 
     @Override
-    public Review getReviewById(int id) throws ResourceNotFoundException {
-        return reviewRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
+    public ResponseDTO getReviewById(int reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + reviewId));
+        ReviewDTO reviewDTO = modelMapper.map(review, ReviewDTO.class);
+        reviewDTO.setBookingId(review.getBooking().getBookingId()); // Set booking ID
+        return new ResponseDTO(200, "Review retrieved successfully", reviewDTO);
     }
 
     @Override
-    public Review updateReview(int id, Review review) throws ResourceNotFoundException {
-        Review existingReview = reviewRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
+    public ResponseDTO updateReview(int reviewId, ReviewDTO reviewDTO) {
+        if (!reviewRepository.existsById(reviewId)) {
+            return new ResponseDTO(404, "Review not found with id: " + reviewId, null);
+        }
 
-        // Update the existing review with new details
-        existingReview.setRating(review.getRating());
-        existingReview.setComment(review.getComment());
+        // Fetch the booking from the database
+        Booking booking = bookingRepository.findById(reviewDTO.getBookingId())
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + reviewDTO.getBookingId()));
 
-        return reviewRepository.save(existingReview);
+        // Map ReviewDTO to Review entity
+        Review review = modelMapper.map(reviewDTO, Review.class);
+        review.setReviewId(reviewId); // Ensure the ID is preserved
+        review.setBooking(booking); // Set the booking
+
+        reviewRepository.save(review);
+        return new ResponseDTO(200, "Review updated successfully", reviewDTO);
     }
 
     @Override
-    public void deleteReview(int id) throws ResourceNotFoundException {
-        Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
-        reviewRepository.delete(review);
+    public ResponseDTO deleteReview(int reviewId) {
+        if (!reviewRepository.existsById(reviewId)) {
+            return new ResponseDTO(404, "Review not found with id: " + reviewId, null);
+        }
+        reviewRepository.deleteById(reviewId);
+        return new ResponseDTO(200, "Review deleted successfully", null);
     }
 }

@@ -1,9 +1,15 @@
 package com.example.homeease.Service.Impl;
 
 import com.example.homeease.Advisor.ResourceNotFoundException;
+import com.example.homeease.Dto.ResponseDTO;
+import com.example.homeease.Dto.ChatDTO;
 import com.example.homeease.Entity.Chat;
+import com.example.homeease.Entity.User;
 import com.example.homeease.Repo.ChatRepository;
+import com.example.homeease.Repo.UserRepository;
 import com.example.homeease.Service.ChatService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,38 +21,78 @@ public class ChatServiceImpl implements ChatService {
     @Autowired
     private ChatRepository chatRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
-    public Chat createChat(Chat chat) {
-        return chatRepository.save(chat);
+    public ResponseDTO createChat(ChatDTO chatDTO) {
+        if (chatRepository.existsById(chatDTO.getChatId())) {
+            return new ResponseDTO(400, "Chat already exists with id: " + chatDTO.getChatId(), null);
+        }
+
+        // Fetch the users from the database
+        User user1 = userRepository.findById(chatDTO.getUser1Id())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + chatDTO.getUser1Id()));
+        User user2 = userRepository.findById(chatDTO.getUser2Id())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + chatDTO.getUser2Id()));
+
+        // Map ChatDTO to Chat entity
+        Chat chat = modelMapper.map(chatDTO, Chat.class);
+        chat.setUser1(user1); // Set the first user
+        chat.setUser2(user2); // Set the second user
+
+        chatRepository.save(chat);
+        return new ResponseDTO(200, "Chat created successfully", chatDTO);
     }
 
     @Override
-    public List<Chat> getAllChats() {
-        return chatRepository.findAll();
+    public ResponseDTO getAllChats() {
+        List<ChatDTO> chatList = modelMapper.map(chatRepository.findAll(),
+                new TypeToken<List<ChatDTO>>() {}.getType());
+        return new ResponseDTO(200, "Chats retrieved successfully", chatList);
     }
 
     @Override
-    public Chat getChatById(int id) throws ResourceNotFoundException {
-        return chatRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Chat not found with id: " + id));
+    public ResponseDTO getChatById(int chatId) {
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new ResourceNotFoundException("Chat not found with id: " + chatId));
+        ChatDTO chatDTO = modelMapper.map(chat, ChatDTO.class);
+        chatDTO.setUser1Id(chat.getUser1().getUserId()); // Set user1 ID
+        chatDTO.setUser2Id(chat.getUser2().getUserId()); // Set user2 ID
+        return new ResponseDTO(200, "Chat retrieved successfully", chatDTO);
     }
 
     @Override
-    public Chat updateChat(int id, Chat chat) throws ResourceNotFoundException {
-        Chat existingChat = chatRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Chat not found with id: " + id));
+    public ResponseDTO updateChat(int chatId, ChatDTO chatDTO) {
+        if (!chatRepository.existsById(chatId)) {
+            return new ResponseDTO(404, "Chat not found with id: " + chatId, null);
+        }
 
-        // Update the existing chat with new details
-        existingChat.setUser1(chat.getUser1());
-        existingChat.setUser2(chat.getUser2());
+        // Fetch the users from the database
+        User user1 = userRepository.findById(chatDTO.getUser1Id())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + chatDTO.getUser1Id()));
+        User user2 = userRepository.findById(chatDTO.getUser2Id())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + chatDTO.getUser2Id()));
 
-        return chatRepository.save(existingChat);
+        // Map ChatDTO to Chat entity
+        Chat chat = modelMapper.map(chatDTO, Chat.class);
+        chat.setChatId(chatId); // Ensure the ID is preserved
+        chat.setUser1(user1); // Set the first user
+        chat.setUser2(user2); // Set the second user
+
+        chatRepository.save(chat);
+        return new ResponseDTO(200, "Chat updated successfully", chatDTO);
     }
 
     @Override
-    public void deleteChat(int id) throws ResourceNotFoundException {
-        Chat chat = chatRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Chat not found with id: " + id));
-        chatRepository.delete(chat);
+    public ResponseDTO deleteChat(int chatId) {
+        if (!chatRepository.existsById(chatId)) {
+            return new ResponseDTO(404, "Chat not found with id: " + chatId, null);
+        }
+        chatRepository.deleteById(chatId);
+        return new ResponseDTO(200, "Chat deleted successfully", null);
     }
 }

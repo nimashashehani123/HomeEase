@@ -42,6 +42,9 @@ public class User {
     @Column
     private String adminLevel; // Optional: Admin level (e.g., Super Admin, Support Admin)
 
+    @OneToMany(mappedBy = "serviceProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Product> products; // List of products added by the service provider
+
     @Column(name = "verification_status", nullable = false)
     private String verificationStatus = "Pending";
 

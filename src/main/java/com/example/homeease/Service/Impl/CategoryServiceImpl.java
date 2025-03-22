@@ -1,9 +1,13 @@
 package com.example.homeease.Service.Impl;
 
 import com.example.homeease.Advisor.ResourceNotFoundException;
+import com.example.homeease.Dto.ResponseDTO;
+import com.example.homeease.Dto.CategoryDTO;
 import com.example.homeease.Entity.Category;
 import com.example.homeease.Repo.CategoryRepository;
 import com.example.homeease.Service.CategoryService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,38 +19,51 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
-    public Category addCategory(Category category) {
-        return categoryRepository.save(category);
+    public ResponseDTO addCategory(CategoryDTO categoryDTO) {
+        if (categoryRepository.existsById(categoryDTO.getCategoryId())) {
+            return new ResponseDTO(400, "Category already exists with id: " + categoryDTO.getCategoryId(), null);
+        }
+        Category category = modelMapper.map(categoryDTO, Category.class);
+        categoryRepository.save(category);
+        return new ResponseDTO(200, "Category added successfully", categoryDTO);
     }
 
     @Override
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public ResponseDTO getAllCategories() {
+        List<CategoryDTO> categoryList = modelMapper.map(categoryRepository.findAll(),
+                new TypeToken<List<CategoryDTO>>() {}.getType());
+        return new ResponseDTO(200, "Categories retrieved successfully", categoryList);
     }
 
     @Override
-    public Category getCategoryById(int id) throws ResourceNotFoundException {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
+    public ResponseDTO getCategoryById(int categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + categoryId));
+        CategoryDTO categoryDTO = modelMapper.map(category, CategoryDTO.class);
+        return new ResponseDTO(200, "Category retrieved successfully", categoryDTO);
     }
 
     @Override
-    public Category updateCategory(int id, Category category) throws ResourceNotFoundException {
-        Category existingCategory = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
-
-        // Update the existing category with new details
-        existingCategory.setCategoryName(category.getCategoryName());
-        existingCategory.setImage(category.getImage());
-
-        return categoryRepository.save(existingCategory);
+    public ResponseDTO updateCategory(int categoryId, CategoryDTO categoryDTO) {
+        if (!categoryRepository.existsById(categoryId)) {
+            return new ResponseDTO(404, "Category not found with id: " + categoryId, null);
+        }
+        Category category = modelMapper.map(categoryDTO, Category.class);
+        category.setCategoryId(categoryId); // Ensure the ID is preserved
+        categoryRepository.save(category);
+        return new ResponseDTO(200, "Category updated successfully", categoryDTO);
     }
 
     @Override
-    public void deleteCategory(int id) throws ResourceNotFoundException {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
-        categoryRepository.delete(category);
+    public ResponseDTO deleteCategory(int categoryId) {
+        if (!categoryRepository.existsById(categoryId)) {
+            return new ResponseDTO(404, "Category not found with id: " + categoryId, null);
+        }
+        categoryRepository.deleteById(categoryId);
+        return new ResponseDTO(200, "Category deleted successfully", null);
     }
 }

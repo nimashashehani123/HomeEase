@@ -1,14 +1,12 @@
 package com.example.homeease.Service;
 
-import com.example.homeease.Advisor.ResourceNotFoundException;
-import com.example.homeease.Entity.Review;
-
-import java.util.List;
+import com.example.homeease.Dto.ResponseDTO;
+import com.example.homeease.Dto.ReviewDTO;
 
 public interface ReviewService {
-    Review addReview(Review review);
-    List<Review> getAllReviews();
-    Review getReviewById(int id) throws ResourceNotFoundException;
-    Review updateReview(int id, Review review) throws ResourceNotFoundException;
-    void deleteReview(int id) throws ResourceNotFoundException;
+    ResponseDTO addReview(ReviewDTO reviewDTO);
+    ResponseDTO getAllReviews();
+    ResponseDTO getReviewById(int reviewId);
+    ResponseDTO updateReview(int reviewId, ReviewDTO reviewDTO);
+    ResponseDTO deleteReview(int reviewId);
 }

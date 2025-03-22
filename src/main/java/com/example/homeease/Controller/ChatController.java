@@ -1,14 +1,12 @@
 package com.example.homeease.Controller;
 
-import com.example.homeease.Advisor.ResourceNotFoundException;
-import com.example.homeease.Entity.Chat;
+import com.example.homeease.Dto.ResponseDTO;
+import com.example.homeease.Dto.ChatDTO;
 import com.example.homeease.Service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/chats")
@@ -18,44 +16,32 @@ public class ChatController {
     private ChatService chatService;
 
     @PostMapping
-    public ResponseEntity<Chat> createChat(@RequestBody Chat chat) {
-        Chat newChat = chatService.createChat(chat);
-        return new ResponseEntity<>(newChat, HttpStatus.CREATED);
+    public ResponseEntity<ResponseDTO> createChat(@RequestBody ChatDTO chatDTO) {
+        ResponseDTO response = chatService.createChat(chatDTO);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
     @GetMapping
-    public ResponseEntity<List<Chat>> getAllChats() {
-        List<Chat> chats = chatService.getAllChats();
-        return new ResponseEntity<>(chats, HttpStatus.OK);
+    public ResponseEntity<ResponseDTO> getAllChats() {
+        ResponseDTO response = chatService.getAllChats();
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Chat> getChatById(@PathVariable int id) {
-        try {
-            Chat chat = chatService.getChatById(id);
-            return new ResponseEntity<>(chat, HttpStatus.OK);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @GetMapping("/{chatId}")
+    public ResponseEntity<ResponseDTO> getChatById(@PathVariable int chatId) {
+        ResponseDTO response = chatService.getChatById(chatId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Chat> updateChat(@PathVariable int id, @RequestBody Chat chat) {
-        try {
-            Chat updatedChat = chatService.updateChat(id, chat);
-            return new ResponseEntity<>(updatedChat, HttpStatus.OK);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @PutMapping("/{chatId}")
+    public ResponseEntity<ResponseDTO> updateChat(@PathVariable int chatId, @RequestBody ChatDTO chatDTO) {
+        ResponseDTO response = chatService.updateChat(chatId, chatDTO);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteChat(@PathVariable int id) {
-        try {
-            chatService.deleteChat(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @DeleteMapping("/{chatId}")
+    public ResponseEntity<ResponseDTO> deleteChat(@PathVariable int chatId) {
+        ResponseDTO response = chatService.deleteChat(chatId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 }

@@ -1,14 +1,12 @@
 package com.example.homeease.Controller;
 
-import com.example.homeease.Advisor.ResourceNotFoundException;
-import com.example.homeease.Entity.Booking;
+import com.example.homeease.Dto.ResponseDTO;
+import com.example.homeease.Dto.BookingDTO;
 import com.example.homeease.Service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/bookings")
@@ -18,44 +16,32 @@ public class BookingController {
     private BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<Booking> createBooking(@RequestBody Booking booking) {
-        Booking newBooking = bookingService.createBooking(booking);
-        return new ResponseEntity<>(newBooking, HttpStatus.CREATED);
+    public ResponseEntity<ResponseDTO> createBooking(@RequestBody BookingDTO bookingDTO) {
+        ResponseDTO response = bookingService.createBooking(bookingDTO);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
     @GetMapping
-    public ResponseEntity<List<Booking>> getAllBookings() {
-        List<Booking> bookings = bookingService.getAllBookings();
-        return new ResponseEntity<>(bookings, HttpStatus.OK);
+    public ResponseEntity<ResponseDTO> getAllBookings() {
+        ResponseDTO response = bookingService.getAllBookings();
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Booking> getBookingById(@PathVariable int id) {
-        try {
-            Booking booking = bookingService.getBookingById(id);
-            return new ResponseEntity<>(booking, HttpStatus.OK);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @GetMapping("/{bookingId}")
+    public ResponseEntity<ResponseDTO> getBookingById(@PathVariable int bookingId) {
+        ResponseDTO response = bookingService.getBookingById(bookingId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Booking> updateBooking(@PathVariable int id, @RequestBody Booking booking) {
-        try {
-            Booking updatedBooking = bookingService.updateBooking(id, booking);
-            return new ResponseEntity<>(updatedBooking, HttpStatus.OK);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @PutMapping("/{bookingId}")
+    public ResponseEntity<ResponseDTO> updateBooking(@PathVariable int bookingId, @RequestBody BookingDTO bookingDTO) {
+        ResponseDTO response = bookingService.updateBooking(bookingId, bookingDTO);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBooking(@PathVariable int id) {
-        try {
-            bookingService.deleteBooking(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @DeleteMapping("/{bookingId}")
+    public ResponseEntity<ResponseDTO> deleteBooking(@PathVariable int bookingId) {
+        ResponseDTO response = bookingService.deleteBooking(bookingId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 }

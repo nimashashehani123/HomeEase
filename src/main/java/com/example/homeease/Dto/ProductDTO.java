@@ -16,4 +16,6 @@ public class ProductDTO {
     private String image; // Optional field for product image
 
     private String contactNumber; // Contact number for inquiries
+
+    private int serviceProviderId; // Only storing service provider's ID
 }

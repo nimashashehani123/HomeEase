@@ -1,14 +1,12 @@
 package com.example.homeease.Controller;
 
-import com.example.homeease.Advisor.ResourceNotFoundException;
-import com.example.homeease.Entity.User;
+import com.example.homeease.Dto.ResponseDTO;
+import com.example.homeease.Dto.UserDTO;
 import com.example.homeease.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/users")
@@ -18,44 +16,35 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody User user) {
-        User newUser = userService.addUser(user);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+    public ResponseEntity<ResponseDTO> addUser(@RequestBody UserDTO userDTO) {
+        ResponseDTO response = userService.addUser(userDTO);
+
+        // Use appropriate HTTP status codes
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(response, status);
     }
 
-    @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
-
-    @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable int userId) {
-        try {
-            User user = userService.getUserById(userId);
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @PutMapping
+    public ResponseEntity<ResponseDTO> updateUser(@RequestBody UserDTO userDTO) {
+        ResponseDTO response = userService.updateUser(userDTO);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable int userId) {
-        try {
-            userService.deleteUser(userId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<ResponseDTO> deleteUser(@PathVariable int userId) {
+        ResponseDTO response = userService.deleteUser(userId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable int userId, @RequestBody User user) {
-        try {
-            User updatedUser = userService.updateUser(userId, user);
-            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @GetMapping
+    public ResponseEntity<ResponseDTO> getAllUsers() {
+        ResponseDTO response = userService.getAllUsers();
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<ResponseDTO> getUserById(@PathVariable int userId) {
+        ResponseDTO response = userService.getUserById(userId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 }

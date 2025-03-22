@@ -1,14 +1,12 @@
 package com.example.homeease.Service;
 
-import com.example.homeease.Advisor.ResourceNotFoundException;
-import com.example.homeease.Entity.Notification;
-
-import java.util.List;
+import com.example.homeease.Dto.ResponseDTO;
+import com.example.homeease.Dto.NotificationDTO;
 
 public interface NotificationService {
-    Notification addNotification(Notification notification);
-    List<Notification> getAllNotifications();
-    Notification getNotificationById(int id) throws ResourceNotFoundException;
-    Notification updateNotification(int id, Notification notification) throws ResourceNotFoundException;
-    void deleteNotification(int id) throws ResourceNotFoundException;
+    ResponseDTO addNotification(NotificationDTO notificationDTO);
+    ResponseDTO getAllNotifications();
+    ResponseDTO getNotificationById(int notificationId);
+    ResponseDTO updateNotification(int notificationId, NotificationDTO notificationDTO);
+    ResponseDTO deleteNotification(int notificationId);
 }
