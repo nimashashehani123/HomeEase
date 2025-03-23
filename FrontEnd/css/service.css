@@ -1,0 +1,311 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: white;
+    color: #333;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Navbar */
+.navbar {
+    background: linear-gradient(10deg, #FFD700,#e3c10e);
+    transition: all 0.3s ease-in-out;
+    color: #000;
+    padding: 0.5rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-radius: 0% 0% 5% 5%;
+
+
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.navbar .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: #000;
+}
+
+.navbar .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+}
+
+.navbar .nav-links a {
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.navbar .nav-links a:hover {
+    color: white;
+}
+
+/* Role Toggle */
+.role-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: -2px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fff;
+    transition: 0.4s;
+    border-radius: 20px;
+    border: 2px solid black;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: black;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #FFD700;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+#roleLabel {
+    font-size: 1rem;
+    color: #000;
+    font-weight: bold;
+}
+
+/* Login Button */
+.login-btn {
+    background-color: white; /* Yellow accent */
+    color: #000; /* Dark text for contrast */
+    padding: 0.5rem 1.5rem;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+    background-color: #666666; /* Brighter yellow for hover */
+    color: white;
+}
+
+.hamburger {
+    display: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+
+    .navbar .logo {
+        font-size: 1rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: #000;
+    }
+    #roleLabel {
+        font-size: 0.9rem;
+        color: #000;
+        font-weight: bold;
+    }
+    .login-btn {
+        background-color: white; /* Yellow accent */
+        color: #000; /* Dark text for contrast */
+        padding: 0.5rem 1.5rem;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar .logo {
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: #000;
+    }
+    #roleLabel {
+        font-size: 0.7rem;
+        color: #000;
+        font-weight: bold;
+    }
+    .login-btn {
+        background-color: white; /* Yellow accent */
+        color: #000; /* Dark text for contrast */
+        padding: 0.5rem 1.5rem;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 0.6rem;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+}
+
+.category-bar {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px 0;
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
+}
+
+.category-bar::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+}
+
+.add-category-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    margin-right: 10px;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.add-category-btn span {
+    line-height: 1;
+}
+
+.admin-only {
+    display: none; /* Hidden by default */
+}
+
+.categories {
+    display: flex;
+}
+
+.category {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.category img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.category span {
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.sub-services {
+    margin-top: 20px;
+}
+
+.sub-services h2 {
+    margin-bottom: 10px;
+}
+
+#sub-services-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.sub-service {
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: calc(33.333% - 10px);
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .sub-service {
+        width: calc(50% - 10px);
+    }
+}
+
+@media (max-width: 480px) {
+    .sub-service {
+        width: 100%;
+    }
+}
+
+/* Footer */
+.footer {
+    background-color: #333;
+    color: #fff;
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.footer .social-links {
+    margin-top: 1rem;
+}
+
+.footer .social-links a {
+    color: #fff;
+    margin: 0 0.5rem;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+.footer .social-links a:hover {
+    color: #FFD700;
+}

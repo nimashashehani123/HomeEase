@@ -7,76 +7,106 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    .input-field {
-      display: block;
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+    /* Role Toggle */
+    .role-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .submit-btn {
-      width: 100%;
-      padding: 10px;
-      background-color: #3b82f6;
-      color: white;
-      font-weight: bold;
-      border: none;
-      border-radius: 5px;
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
       cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 20px;
     }
 
-    .submit-btn:hover {
-      background-color: #2563eb;
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #FFD700;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    #roleLabel {
+      font-size: 1rem;
+      color: #000;
+      font-weight: bold;
     }
   </style>
 
 </head>
 <body class="flex justify-center items-center min-h-screen bg-gray-100">
-
-<div class="w-full max-w-lg p-6 bg-white shadow-lg rounded-lg">
-  <!-- Tabs -->
-  <div class="flex justify-around border-b">
-    <button class="tab-btn py-2 px-4 font-semibold text-gray-700 border-b-2 border-transparent hover:border-blue-500" onclick="openTab('customer')">Customer</button>
-    <button class="tab-btn py-2 px-4 font-semibold text-gray-700 border-b-2 border-transparent hover:border-blue-500" onclick="openTab('provider')">Service Provider</button>
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="container">
+    <a href="#" class="logo">HomeEase</a>
+    <ul class="nav-links">
+      <li><a href="#home" style="color: white">Home</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <!-- Role Selection Toggle -->
+    <div class="role-toggle">
+      <label class="switch">
+        <input type="checkbox" id="roleToggle">
+        <span class="slider"></span>
+      </label>
+      <span id="roleLabel">Customer</span>
+    </div>
+    <a href="#" class="login-btn"></a>
+    <div class="hamburger" id="hamburger">
+      <i class="fas fa-bars"></i>
+    </div>
   </div>
-    <!-- Customer Form -->
-    <form id="customer" class="tab-content hidden">
-      <input type="text" placeholder="Full Name" class="input-field">
-      <input type="text" placeholder="Username" class="input-field">
-      <input type="email" placeholder="Email" class="input-field">
-      <input type="password" placeholder="Password" class="input-field">
-      <input type="text" placeholder="Contact" class="input-field">
-      <input type="text" placeholder="Location" class="input-field">
-      <button class="submit-btn">Register</button>
-    </form>
-
-    <!-- Service Provider Form -->
-    <form id="provider" class="tab-content hidden">
-      <input type="text" placeholder="Full Name" class="input-field">
-      <input type="text" placeholder="Username" class="input-field">
-      <input type="email" placeholder="Email" class="input-field">
-      <input type="password" placeholder="Password" class="input-field">
-      <input type="text" placeholder="Contact" class="input-field">
-      <input type="text" placeholder="Availability" class="input-field">
-      <input type="text" placeholder="Location" class="input-field">
-      <button class="submit-btn">Register</button>
-    </form>
-  </div>
-</div>
-
+</nav>
+<script src="../js/jquery-3.7.1.min.js"></script>
 <script>
-  function openTab(tabId) {
-    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.add("hidden"));
-    document.getElementById(tabId).classList.remove("hidden");
+  // Role Toggle Functionality
+  const roleToggle = document.getElementById('roleToggle');
+  const roleLabel = document.getElementById('roleLabel');
 
-    document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("border-blue-500"));
-    event.target.classList.add("border-blue-500");
-  }
-
-  // Set default active tab
-  openTab('customer');
+  roleToggle.addEventListener('change', function () {
+    if (this.checked) {
+      roleLabel.textContent = 'Provider';
+      /*window.location.href = 'provider-login.html';*/ // Redirect to Provider Login Page
+    } else {
+      roleLabel.textContent = 'Customer';
+     /* window.location.href = 'customer-login.html';*/ // Redirect to Customer Login Page
+    }
+  });
 </script>
 </body>
 </html>

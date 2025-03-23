@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services Page</title>
+  <link rel="stylesheet" href="../css/service.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="container">
+    <a href="#" class="logo">HomeEase</a>
+    <a href="" >
+    </a>
+    <a href="" >
+    </a>
+    <ul class="nav-links">
+      <li><a href="#home" style="color: white">Home</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="../view/login.html" class="login-btn">
+      <i class="fas fa-user"></i> Login <!-- Login icon and text -->
+    </a>
+    <!-- Role Selection Toggle -->
+    <div class="role-toggle">
+      <label class="switch">
+        <input type="checkbox" id="roleToggle">
+        <span class="slider"></span>
+      </label>
+      <span id="roleLabel">Customer</span>
+    </div>
+    <div class="hamburger" id="hamburger">
+      <i class="fas fa-bars"></i>
+    </div>
+  </div>
+</nav>
+<div class="container">
+  <!-- First Section: Category Horizontal Bar -->
+  <div class="category-bar">
+    <!-- Add Category Button (Visible only to Admin) -->
+    <div class="add-category-btn admin-only" onclick="addCategory()">
+      <span>+</span>
+    </div>
+
+    <!-- Categories List -->
+    <div class="categories">
+      <div class="category" onclick="showSubServices('all')">
+        <img src="all.png" alt="All">
+        <span>All</span>
+      </div>
+      <div class="category" onclick="showSubServices('category1')">
+        <img src="category1.png" alt="Category 1">
+        <span>Category 1</span>
+      </div>
+      <div class="category" onclick="showSubServices('category2')">
+        <img src="category2.png" alt="Category 2">
+        <span>Category 2</span>
+      </div>
+      <!-- Add more categories as needed -->
+    </div>
+  </div>
+
+  <!-- Second Section: Sub-Services -->
+  <div class="sub-services">
+    <h2>Sub-Services</h2>
+    <div id="sub-services-list">
+      <!-- Sub-services will be dynamically loaded here -->
+    </div>
+  </div>
+</div>
+
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>&copy; 2023 HomeEase. All rights reserved.</p>
+    <div class="social-links">
+      <a href="#"><i class="fab fa-facebook"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+    </div>
+  </div>
+</footer>
+<script src="../js/jquery-3.7.1.min.js"></script>
+<script src="../js/service.js"></script>
+</body>
+</html>

@@ -55,4 +55,7 @@ public class VarList {
     public static final int Loop_Detected = 508;
     public static final int Not_Extended = 510;
     public static final int Network_Authentication_Required = 511;
+
+    public static final int User_Not_Found = 404; // User not found
+    public static final int Invalid_Credentials = 403; // Invalid credentials
 }
