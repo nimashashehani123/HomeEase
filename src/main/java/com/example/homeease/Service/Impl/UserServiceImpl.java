@@ -1,7 +1,6 @@
 package com.example.homeease.Service.Impl;
 
 import com.example.homeease.Advisor.ResourceNotFoundException;
-import com.example.homeease.Dto.LoginDTO;
 import com.example.homeease.Dto.ResponseDTO;
 import com.example.homeease.Dto.UserDTO;
 import com.example.homeease.Entity.User;
@@ -85,7 +84,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
             // Set default role if not provided
             if (user.getRole() == null) {
-                user.setRole(UserRole.ADMIN); // Default role
+                user.setRole(UserRole.CUSTOMER); // Default role
             }
 
             // Set default verification status if not provided
