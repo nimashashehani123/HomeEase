@@ -13,4 +13,6 @@ public interface ServiceRepository extends JpaRepository<Service, Integer> {
     List<Service> findByServiceProvider_UserId(int serviceProviderId); // Find services by service provider ID
     // Find all services by category ID
     List<Service> findByCategoryId(int categoryId);
+    List<Service> findByCategoryId1(int categoryId);
+    List<Service> findByCategoryId2(int categoryId);
 }
