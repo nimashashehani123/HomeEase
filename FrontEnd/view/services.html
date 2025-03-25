@@ -39,40 +39,155 @@
     </div>
   </div>
 </nav>
-<div class="container">
-  <!-- First Section: Category Horizontal Bar -->
-  <div class="category-bar">
-    <!-- Add Category Button (Visible only to Admin) -->
-    <div class="add-category-btn admin-only" onclick="addCategory()">
-      <span>+</span>
-    </div>
 
-    <!-- Categories List -->
-    <div class="categories">
-      <div class="category" onclick="showSubServices('all')">
-        <img src="all.png" alt="All">
-        <span>All</span>
-      </div>
-      <div class="category" onclick="showSubServices('category1')">
-        <img src="category1.png" alt="Category 1">
-        <span>Category 1</span>
-      </div>
-      <div class="category" onclick="showSubServices('category2')">
-        <img src="category2.png" alt="Category 2">
-        <span>Category 2</span>
-      </div>
-      <!-- Add more categories as needed -->
+<!-- Search Section - Add this right after the navbar and before the category section -->
+<section class="search-section">
+  <div class="container">
+    <div class="search-container">
+      <form class="search-form">
+        <div class="search-row">
+          <div class="search-field location-field">
+            <label for="location">
+              <i class="fas fa-map-marker-alt"></i>
+            </label>
+            <select id="location" name="location">
+              <option value="all">All Locations</option>
+              <option value="new-york">New York</option>
+              <option value="los-angeles">Los Angeles</option>
+              <option value="chicago">Chicago</option>
+              <option value="houston">Houston</option>
+              <option value="miami">Miami</option>
+            </select>
+          </div>
+
+          <div class="search-field keyword-field">
+            <label for="keyword">
+              <i class="fas fa-search"></i>
+            </label>
+            <input type="text" id="keyword" name="keyword" placeholder="What service are you looking for?">
+          </div>
+
+          <div class="search-field category-field">
+            <label for="category">
+              <i class="fas fa-tags"></i>
+            </label>
+            <select id="category" name="category">
+              <option value="all">All Categories</option>
+              <option value="1">Web Design</option>
+              <option value="2">App Development</option>
+              <option value="3">SEO</option>
+              <option value="4">Graphic Design</option>
+              <option value="5">Digital Marketing</option>
+              <option value="6">Photography</option>
+            </select>
+          </div>
+
+          <button type="submit" class="search-button">
+            Search
+          </button>
+        </div>
+
+        <div class="advanced-filters">
+          <div class="filter-toggle">
+            <i class="fas fa-sliders-h"></i> Advanced Filters
+          </div>
+
+          <div class="filter-options">
+            <div class="filter-group">
+              <h4>Price Range</h4>
+              <div class="range-slider">
+                <input type="range" min="0" max="2000" value="1000" class="price-slider" id="priceRange">
+                <div class="range-values">
+                  <span>$0</span>
+                  <span id="priceValue">$1000</span>
+                  <span>$2000+</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <h4>Rating</h4>
+              <div class="rating-options">
+                <label class="rating-option">
+                  <input type="checkbox" value="5">
+                  <span class="rating-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                  </span>
+                </label>
+                <label class="rating-option">
+                  <input type="checkbox" value="4">
+                  <span class="rating-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                  </span> & up
+                </label>
+                <label class="rating-option">
+                  <input type="checkbox" value="3">
+                  <span class="rating-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                    <i class="far fa-star"></i>
+                  </span> & up
+                </label>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <h4>Availability</h4>
+              <div class="availability-options">
+                <label class="availability-option">
+                  <input type="checkbox" value="today"> Available Today
+                </label>
+                <label class="availability-option">
+                  <input type="checkbox" value="week"> Available This Week
+                </label>
+                <label class="availability-option">
+                  <input type="checkbox" value="weekend"> Weekend Availability
+                </label>
+              </div>
+            </div>
+
+            <button type="button" class="apply-filters-btn">Apply Filters</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
+</section>
 
-  <!-- Second Section: Sub-Services -->
-  <div class="sub-services">
-    <h2>Sub-Services</h2>
-    <div id="sub-services-list">
-      <!-- Sub-services will be dynamically loaded here -->
+<!-- Category Section (Improved) -->
+<section class="category-section">
+  <div class="category-container">
+    <button class="add-btn" id="addCategoryBtn">Add category</button>
+    <button class="scroll-btn scroll-left" id="scrollLeft">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <div class="category-wrapper" id="categoryWrapper">
+
+      <!-- Categories will be loaded here by JavaScript -->
     </div>
+    <button class="scroll-btn scroll-right" id="scrollRight">
+      <i class="fas fa-chevron-right"></i>
+    </button>
   </div>
-</div>
+</section>
+<button class="add-btn" style="margin-left: 7vw" id="addServiceBtn">Add Service</button>
+<!-- Service Section (Improved) -->
+<section class="service-section">
+  <h2 class="section-title" id="serviceTitle" style="margin-left: 1vw">Web Design Services</h2>
+  <div class="service-container" id="serviceContainer">
+    <!-- Services will be loaded here by JavaScript -->
+  </div>
+</section>
 
 
 <!-- Footer -->
@@ -86,7 +201,545 @@
     </div>
   </div>
 </footer>
+
 <script src="../js/jquery-3.7.1.min.js"></script>
-<script src="../js/service.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script>
+ /* document.addEventListener("DOMContentLoaded", function () {
+  const categoryWrapper = document.getElementById("categoryWrapper");
+  const serviceContainer = document.getElementById("serviceContainer");
+  const serviceTitle = document.getElementById("serviceTitle");
+  const scrollLeftBtn = document.getElementById("scrollLeft");
+  const scrollRightBtn = document.getElementById("scrollRight");
+
+  // Dummy category data
+  const categories = [
+    { id: 1, name: "Web Design", image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg" },
+    { id: 2, name: "App Development", image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg" },
+    { id: 3, name: "SEO", image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg" },
+    { id: 4, name: "Graphic Design", image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg" },
+    { id: 5, name: "Digital Marketing", image: "https://via.placeholder.com/100" },
+    { id: 6, name: "Photography", image: "https://via.placeholder.com/100" },
+    { id: 7, name: "Content Writing", image: "https://via.placeholder.com/100" },
+    { id: 8, name: "Video Editing", image: "https://via.placeholder.com/100" },
+    { id: 9, name: "UI/UX Design", image: "https://via.placeholder.com/100" },
+    { id: 10, name: "3D Modeling", image: "https://via.placeholder.com/100" }
+  ];
+
+  // Dummy services data with more detailed info
+  const services = {
+    1: [
+      { name: "Landing Page", price: "$299", rating: 4.9, image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg", description: "Custom landing page optimized for conversions" },
+      { name: "E-commerce Site", price: "$999", rating: 4.7, image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg", description: "Full featured online store with payment integration" },
+      { name: "Corporate Website", price: "$799", rating: 4.8, image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg", description: "Professional business website with multiple pages" },
+      { name: "Blog Setup", price: "$399", rating: 4.6, image: "https://via.placeholder.com/150", description: "Custom blog with content management system" },
+      { name: "Landing Page", price: "$299", rating: 4.9, image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg", description: "Custom landing page optimized for conversions" },
+      { name: "E-commerce Site", price: "$999", rating: 4.7, image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg", description: "Full featured online store with payment integration" },
+      { name: "Corporate Website", price: "$799", rating: 4.8, image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg", description: "Professional business website with multiple pages" },
+      { name: "Blog Setup", price: "$399", rating: 4.6, image: "https://via.placeholder.com/150", description: "Custom blog with content management system" }
+    ],
+    2: [
+      { name: "Android App", price: "$1299", rating: 4.8, image: "https://via.placeholder.com/150", description: "Native Android application development" },
+      { name: "iOS App", price: "$1499", rating: 4.9, image: "https://via.placeholder.com/150", description: "Native iOS application with App Store submission" },
+      { name: "Cross-platform App", price: "$1899", rating: 4.7, image: "https://via.placeholder.com/150", description: "Flutter/React Native app for both platforms" }
+    ],
+    3: [
+      { name: "On-Page SEO", price: "$399", rating: 4.8, image: "https://via.placeholder.com/150", description: "Optimize your website for search engines" },
+      { name: "Keyword Research", price: "$299", rating: 4.7, image: "https://via.placeholder.com/150", description: "In-depth analysis of valuable keywords" },
+      { name: "Link Building", price: "$499", rating: 4.6, image: "https://via.placeholder.com/150", description: "Quality backlinks to boost your ranking" }
+    ],
+    4: [
+      { name: "Logo Design", price: "$199", rating: 4.9, image: "https://via.placeholder.com/150", description: "Professional logo with multiple revisions" },
+      { name: "Business Cards", price: "$99", rating: 4.8, image: "https://via.placeholder.com/150", description: "Print-ready business card designs" },
+      { name: "Branding Package", price: "$499", rating: 4.9, image: "https://via.placeholder.com/150", description: "Complete brand identity with style guide" }
+    ],
+    5: [
+      { name: "Google Ads", price: "$299/mo", rating: 4.7, image: "https://via.placeholder.com/150", description: "Managed Google Ads campaigns" },
+      { name: "Social Media Ads", price: "$249/mo", rating: 4.8, image: "https://via.placeholder.com/150", description: "Facebook, Instagram ad management" }
+    ],
+    6: [
+      { name: "Wedding Photography", price: "$999", rating: 4.9, image: "https://via.placeholder.com/150", description: "Full day wedding photography service" },
+      { name: "Product Photography", price: "$399", rating: 4.8, image: "https://via.placeholder.com/150", description: "Studio product shots for e-commerce" }
+    ],
+    7: [
+      { name: "Blog Posts", price: "$99", rating: 4.7, image: "https://via.placeholder.com/150", description: "SEO-optimized blog content" },
+      { name: "Website Copy", price: "$299", rating: 4.8, image: "https://via.placeholder.com/150", description: "Professional website copywriting" }
+    ],
+    8: [
+      { name: "Video Editing", price: "$199", rating: 4.6, image: "https://via.placeholder.com/150", description: "Professional video editing services" },
+      { name: "Motion Graphics", price: "$299", rating: 4.7, image: "https://via.placeholder.com/150", description: "Custom motion graphics and animations" }
+    ],
+    9: [
+      { name: "UI Design", price: "$599", rating: 4.8, image: "https://via.placeholder.com/150", description: "User interface design for websites/apps" },
+      { name: "UX Research", price: "$799", rating: 4.9, image: "https://via.placeholder.com/150", description: "In-depth user experience research" }
+    ],
+    10: [
+      { name: "3D Product Models", price: "$299", rating: 4.7, image: "https://via.placeholder.com/150", description: "Detailed 3D models for products" },
+      { name: "Architectural 3D", price: "$899", rating: 4.8, image: "https://via.placeholder.com/150", description: "Architectural visualizations and renders" }
+    ]
+  };
+
+  // Load categories dynamically
+  function loadCategories() {
+    categoryWrapper.innerHTML = "";
+    categories.forEach((category, index) => {
+      const categoryElement = document.createElement("div");
+      categoryElement.classList.add("category");
+      if (index === 0) categoryElement.classList.add("active");
+      categoryElement.setAttribute("data-category", category.id);
+      categoryElement.innerHTML = `
+        <img src="${category.image}" alt="${category.name}">
+        <span>${category.name}</span>
+      `;
+      categoryElement.addEventListener("click", () => {
+        // Remove active class from all categories
+        document.querySelectorAll(".category").forEach(cat => {
+          cat.classList.remove("active");
+        });
+        // Add active class to clicked category
+        categoryElement.classList.add("active");
+        loadServices(category.id);
+        serviceTitle.textContent = `${category.name} Services`;
+      });
+      categoryWrapper.appendChild(categoryElement);
+    });
+  }
+
+  // Load services dynamically
+  function loadServices(categoryId) {
+    serviceContainer.innerHTML = "";
+    (services[categoryId] || []).forEach(service => {
+      const serviceElement = document.createElement("div");
+      serviceElement.classList.add("service-card");
+      serviceElement.innerHTML = `
+        <img src="${service.image}" alt="${service.name}">
+        <div class="service-content">
+          <h3>${service.name}</h3>
+          <p>${service.description}</p>
+          <div class="service-footer">
+            <span class="service-price">${service.price}</span>
+            <span class="rating">
+              ${getRatingStars(service.rating)}
+            </span>
+          </div>
+          <button class="book-btn">Book Now</button>
+        </div>
+      `;
+      serviceContainer.appendChild(serviceElement);
+    });
+  }
+
+  // Generate star rating HTML
+  function getRatingStars(rating) {
+    let stars = '';
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5;
+
+    for (let i = 0; i < fullStars; i++) {
+      stars += '<i class="fas fa-star"></i>';
+    }
+
+    if (halfStar) {
+      stars += '<i class="fas fa-star-half-alt"></i>';
+    }
+
+    return stars;
+  }
+
+  // Scroll functionality for category wrapper
+  scrollLeftBtn.addEventListener("click", () => {
+    categoryWrapper.scrollBy({ left: -300, behavior: "smooth" });
+  });
+
+  scrollRightBtn.addEventListener("click", () => {
+    categoryWrapper.scrollBy({ left: 300, behavior: "smooth" });
+  });
+
+  // Load categories on page load
+  loadCategories();
+  loadServices(1); // Default to the first category's services
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+  // Toggle advanced filters
+  const filterToggle = document.querySelector('.filter-toggle');
+  const filterOptions = document.querySelector('.filter-options');
+
+  filterToggle.addEventListener('click', function() {
+    filterOptions.style.display = filterOptions.style.display === 'none' || filterOptions.style.display === ''
+            ? 'grid'
+            : 'none';
+  });
+
+  // Update price range value
+  const priceRange = document.getElementById('priceRange');
+  const priceValue = document.getElementById('priceValue');
+
+  priceRange.addEventListener('input', function() {
+    priceValue.textContent = '$' + this.value;
+  });
+
+  // Form submission
+  const searchForm = document.querySelector('.search-form');
+
+  searchForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Get form values
+    const location = document.getElementById('location').value;
+    const keyword = document.getElementById('keyword').value;
+    const category = document.getElementById('category').value;
+    const price = document.getElementById('priceRange').value;
+
+    // Get ratings (checked checkboxes)
+    const ratingCheckboxes = document.querySelectorAll('.rating-option input:checked');
+    const ratings = Array.from(ratingCheckboxes).map(cb => cb.value);
+
+    // Get availability options
+    const availabilityCheckboxes = document.querySelectorAll('.availability-option input:checked');
+    const availability = Array.from(availabilityCheckboxes).map(cb => cb.value);
+
+    // Create search params object
+    const searchParams = {
+      location,
+      keyword,
+      category,
+      price,
+      ratings,
+      availability
+    };
+
+    console.log('Search params:', searchParams);
+
+    // Here you would typically:
+    // 1. Send the search params to your backend API
+    // 2. Or filter your frontend data based on these params
+    // 3. Update the UI with the filtered results
+
+    // For this demo, if a category is selected, we'll simulate filtering by showing that category
+    if (category !== 'all') {
+      // Select the category in the category bar
+      const categoryElements = document.querySelectorAll('.category');
+      categoryElements.forEach(el => {
+        el.classList.remove('active');
+        if (el.getAttribute('data-category') === category) {
+          el.classList.add('active');
+          // Trigger a click on this category to load its services
+          el.click();
+        }
+      });
+
+      // Scroll to services section
+      document.querySelector('.service-section').scrollIntoView({
+        behavior: 'smooth'
+      });
+    }
+  });
+});*/
+  // File: service.js - Place this in your js folder
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // DOM Elements
+    const categoryWrapper = document.getElementById("categoryWrapper");
+    const serviceContainer = document.getElementById("serviceContainer");
+    const serviceTitle = document.getElementById("serviceTitle");
+    const scrollLeftBtn = document.getElementById("scrollLeft");
+    const scrollRightBtn = document.getElementById("scrollRight");
+    const searchForm = document.querySelector('.search-form');
+    const filterToggle = document.querySelector('.filter-toggle');
+    const filterOptions = document.querySelector('.filter-options');
+    const priceRange = document.getElementById('priceRange');
+    const priceValue = document.getElementById('priceValue');
+
+    // Assuming the token is stored in localStorage
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      try {
+        // Decode the token
+        const decodedToken = jwt_decode(token);
+
+        // Extract the role from the token payload
+        const role = decodedToken.role; // Assuming the role is stored in the "role" claim
+
+        console.log("Decoded Token:", decodedToken);
+        console.log("User Role:", role);
+
+        // Perform actions based on the role
+        if (role === "SERVICE_PROVIDER") {
+          console.log("User is a Service Provider");
+          document.getElementById("addCategoryBtn").style.display = "none";
+          // Redirect or show provider-specific content
+        } else if (role === "CUSTOMER") {
+          console.log("User is a Customer");
+          document.getElementById("addCategoryBtn").style.display = "none";
+          document.getElementById("addServiceBtn").style.display = "none";
+          // Redirect or show customer-specific content
+        }  else if (role === "ADMIN") {
+          console.log("User is a Admin");
+          document.getElementById("addServiceBtn").style.display = "none";
+          // Redirect or show customer-specific content
+        }
+      } catch (error) {
+        console.error("Failed to decode token:", error);
+      }
+    } else {
+      document.getElementById("#addCategoryBtn").style.display = "none";
+      document.getElementById("#addServiceBtn").style.display = "none";
+    }
+
+
+    // Base URL for API - change this to your actual API endpoint
+    const API_BASE_URL = "http://localhost:8080/api/v1";
+    const UPLOAD_BASE_URL = 'http://localhost:8080/';
+
+    // Current active category ID
+    let activeCategoryId = 1;
+
+    // Load categories from the database
+    function fetchCategories() {
+      $.ajax({
+        url: `${API_BASE_URL}/categories/all`,
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+          "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function(data) {
+          renderCategories(data.data.data);
+          // Load default category services
+        /*  loadServices(activeCategoryId);*/
+        },
+        error: function(xhr, status, error) {
+          console.error("Error fetching categories:", error);
+          // Display error message to user
+          categoryWrapper.innerHTML = `<div class="error-message">Failed to load categories. Please try again later.</div>`;
+        }
+      });
+    }
+
+    // Render categories in the UI
+    function renderCategories(categories) {
+      categoryWrapper.innerHTML = "";
+      categories.forEach((category, index) => {
+        const categoryElement = document.createElement("div");
+        console.log(category)
+        categoryElement.classList.add("category");
+        if (index === 0) {
+          categoryElement.classList.add("active");
+          serviceTitle.textContent = `${category.categoryName} Services`;
+          activeCategoryId = category.id;
+        }
+
+        categoryElement.setAttribute("data-category", category.id);
+        categoryElement.innerHTML = `
+  <img src="uploads/${category.image}" alt="${category.categoryName}">
+  <span>${category.categoryName}</span>
+`;
+
+        categoryElement.addEventListener("click", () => {
+          // Remove active class from all categories
+          document.querySelectorAll(".category").forEach(cat => {
+            cat.classList.remove("active");
+          });
+          // Add active class to clicked category
+          categoryElement.classList.add("active");
+          activeCategoryId = category.id;
+          loadServices(category.id);
+          serviceTitle.textContent = `${category.name} Services`;
+        });
+
+        categoryWrapper.appendChild(categoryElement);
+      });
+    }
+
+    // Load services for a specific category
+    function loadServices(categoryId, filters = {}) {
+      // Show loading state
+      serviceContainer.innerHTML = `<div class="loading">Loading services...</div>`;
+
+      // Build query parameters from filters
+      let queryParams = $.param(filters);
+      let url = `${API_BASE_URL}/services/${categoryId}`;
+      if (queryParams) {
+        url += `?${queryParams}`;
+      }
+
+      $.ajax({
+        url: url,
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          renderServices(data);
+        },
+        error: function(xhr, status, error) {
+          console.error("Error fetching services:", error);
+          serviceContainer.innerHTML = `<div class="error-message">Failed to load services. Please try again later.</div>`;
+        }
+      });
+    }
+
+    // Render services in the UI
+    function renderServices(services) {
+      serviceContainer.innerHTML = "";
+
+      if (services.length === 0) {
+        serviceContainer.innerHTML = `<div class="no-results">No services found matching your criteria.</div>`;
+        return;
+      }
+
+      services.forEach(service => {
+        const serviceElement = document.createElement("div");
+        serviceElement.classList.add("service-card");
+        serviceElement.innerHTML = `
+        <img src="${service.image_url}" alt="${service.name}">
+        <div class="service-content">
+          <h3>${service.name}</h3>
+          <p>${service.description}</p>
+          <div class="service-footer">
+            <span class="service-price">${service.price}</span>
+            <span class="rating">
+              ${getRatingStars(service.rating)}
+            </span>
+          </div>
+          <button class="book-btn" data-service-id="${service.id}">Book Now</button>
+        </div>
+      `;
+        serviceContainer.appendChild(serviceElement);
+      });
+
+      // Add event listeners to book buttons
+      document.querySelectorAll('.book-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const serviceId = this.getAttribute('data-service-id');
+          bookService(serviceId);
+        });
+      });
+    }
+
+    // Function to handle booking a service
+    function bookService(serviceId) {
+      // Check if user is logged in
+      if (!isUserLoggedIn()) {
+        // Redirect to login page
+        window.location.href = '../view/login.html?redirect=services&service=' + serviceId;
+        return;
+      }
+
+      // Proceed with booking
+      window.location.href = '../view/booking.html?service=' + serviceId;
+    }
+
+    // Helper function to check if user is logged in
+    function isUserLoggedIn() {
+      // This is a placeholder - implement your actual login check logic
+      return localStorage.getItem('user_token') !== null;
+    }
+
+    // Generate star rating HTML
+    function getRatingStars(rating) {
+      let stars = '';
+      const fullStars = Math.floor(rating);
+      const halfStar = rating % 1 >= 0.5;
+
+      for (let i = 0; i < fullStars; i++) {
+        stars += '<i class="fas fa-star"></i>';
+      }
+
+      if (halfStar) {
+        stars += '<i class="fas fa-star-half-alt"></i>';
+      }
+
+      // Add remaining empty stars
+      const emptyStars = 5 - Math.ceil(rating);
+      for (let i = 0; i < emptyStars; i++) {
+        stars += '<i class="far fa-star"></i>';
+      }
+
+      return stars;
+    }
+
+    // Event listeners for category scrolling
+    scrollLeftBtn.addEventListener("click", () => {
+      categoryWrapper.scrollBy({ left: -300, behavior: "smooth" });
+    });
+
+    scrollRightBtn.addEventListener("click", () => {
+      categoryWrapper.scrollBy({ left: 300, behavior: "smooth" });
+    });
+
+    // Toggle advanced filters
+    filterToggle.addEventListener('click', function() {
+      filterOptions.style.display = filterOptions.style.display === 'none' || filterOptions.style.display === ''
+              ? 'grid'
+              : 'none';
+    });
+
+    // Update price range value
+    priceRange.addEventListener('input', function() {
+      priceValue.textContent = '$' + this.value;
+    });
+
+    // Handle search form submission
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Get form values
+      const location = document.getElementById('location').value;
+      const keyword = document.getElementById('keyword').value;
+      const category = document.getElementById('category').value;
+      const price = document.getElementById('priceRange').value;
+
+      // Get ratings (checked checkboxes)
+      const ratingCheckboxes = document.querySelectorAll('.rating-option input:checked');
+      const ratings = Array.from(ratingCheckboxes).map(cb => cb.value);
+
+      // Get availability options
+      const availabilityCheckboxes = document.querySelectorAll('.availability-option input:checked');
+      const availability = Array.from(availabilityCheckboxes).map(cb => cb.value);
+
+      // Create search params object
+      const searchParams = {
+        location,
+        keyword,
+        price,
+        ratings: ratings.join(','),
+        availability: availability.join(',')
+      };
+
+      // If a specific category is selected, use that category
+      if (category !== 'all') {
+        activeCategoryId = parseInt(category);
+        // Update active category in the UI
+        document.querySelectorAll('.category').forEach(el => {
+          el.classList.remove('active');
+          if (el.getAttribute('data-category') === category) {
+            el.classList.add('active');
+          }
+        });
+
+        // Update the title
+        const selectedCategory = document.querySelector(`.category[data-category="${category}"]`);
+        if (selectedCategory) {
+          serviceTitle.textContent = `${selectedCategory.querySelector('span').textContent} Services`;
+        }
+      }
+
+      // Load services with filters
+      loadServices(activeCategoryId, searchParams);
+
+      // Scroll to services section
+      document.querySelector('.service-section').scrollIntoView({
+        behavior: 'smooth'
+      });
+
+      // Hide filter options after search
+      filterOptions.style.display = 'none';
+    });
+
+    // Initialize the page
+    fetchCategories();
+  });
+</script>
 </body>
 </html>

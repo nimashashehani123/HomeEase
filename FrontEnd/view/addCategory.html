@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Category</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --primary-hover: #3a56d4;
+      --error-color: #ef233c;
+      --success-color: #4cc9f0;
+      --text-color: #2b2d42;
+      --light-gray: #f8f9fa;
+      --border-color: #dee2e6;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: #f5f7ff;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .form-container {
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 2rem;
+      margin: 2rem auto;
+      max-width: 600px;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    input[type="text"],
+    input[type="file"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    input[type="text"]:focus,
+    input[type="file"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    .preview-container {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .preview-image {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      display: none;
+      margin: 1rem auto;
+      border: 1px solid var(--border-color);
+    }
+
+    .submit-btn {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      width: 100%;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .submit-btn:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      background-color: #adb5bd;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error-message {
+      color: var(--error-color);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+
+    .success-message {
+      color: var(--success-color);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+
+    .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* File input customization */
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .file-input-label {
+      display: block;
+      padding: 0.75rem 1rem;
+      background-color: var(--light-gray);
+      border: 1px dashed var(--border-color);
+      border-radius: var(--border-radius);
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .file-input-label:hover {
+      background-color: #e9ecef;
+      border-color: var(--primary-color);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+      .form-container {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<form id="addCategoryForm" enctype="multipart/form-data">
+  <div class="form-group">
+    <label for="categoryName">Category Name</label>
+    <input type="text" id="categoryName" name="categoryName" required
+           placeholder="Enter category name" oninput="validateCategoryName()">
+    <div id="nameError" class="error-message"></div>
+  </div>
+  <div class="form-group">
+    <label for="categoryImage">Category Image</label>
+    <input type="file" id="categoryImage" name="categoryImage" accept="image/*" required>
+    <img id="imagePreview" class="preview-image" src="#" alt="Image Preview">
+  </div>
+  <button type="submit" class="submit-btn">
+    <span id="submitText">Add Category</span>
+    <span id="spinner" class="spinner"></span>
+  </button>
+</form>
+<script src="../js/jquery-3.7.1.min.js"></script>
+
+<script>
+  // Show loading state
+  $('#submitText').text('Processing...');
+  $('#spinner').show();
+
+  // Complete/hide loading state
+  $('#submitText').text('Add Category');
+  $('#spinner').hide();
+
+  function validateCategoryName() {
+    const name = $('#categoryName').val().trim();
+    if (name.length < 3) {
+      $('#nameError').text('Name must be at least 3 characters').show();
+      return false;
+    }
+    $('#nameError').hide();
+    return true;
+  }
+
+  $('#addCategoryForm').on('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData();
+
+    // 1. Create EXACT matching DTO structure
+    const categoryDTO = {
+      categoryName: $('#categoryName').val().trim(), // Must match your DTO field name
+      // Add other fields if your DTO requires them
+      // categoryId: 0, // Uncomment if needed
+      // image: null    // Will be set by backend
+    };
+
+    // 2. Append as JSON blob with proper type
+    formData.append('categoryDTO', new Blob([JSON.stringify(categoryDTO)], {
+      type: 'application/json'
+    }));
+
+    // 3. Append file
+    formData.append('file', $('#categoryImage')[0].files[0]);
+
+    // 4. Debug output (remove after testing)
+    for (var pair of formData.entries()) {
+      if (pair[0] === 'categoryDTO') {
+        pair[1].text().then(console.log);
+      } else {
+        console.log(pair[0], pair[1]);
+      }
+    }
+
+    $.ajax({
+      url: 'http://localhost:8080/api/v1/categories/add',
+      type: 'POST',
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("token")
+      },
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function(response) {
+        alert('Success! Category: ' + response.data.categoryName);
+        $('#addCategoryForm')[0].reset();
+        $('#imagePreview').hide();
+      },
+      error: function(xhr) {
+        alert('Error: ' + (xhr.responseJSON?.message || 'Check console for details'));
+        console.log(xhr.responseJSON);
+      }
+    });
+  });
+</script>
+</body>
+</html>

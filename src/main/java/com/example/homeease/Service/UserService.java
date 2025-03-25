@@ -12,4 +12,6 @@ public interface UserService {
     ResponseDTO getAllUsers();
     ResponseDTO getUserById(int userId);
     UserDTO searchUser(String username);
+    ResponseDTO getUserIdByEmail(String email);
+    ResponseDTO getAllServiceProviderIds();
 }

@@ -4,7 +4,7 @@ import com.example.homeease.Dto.ResponseDTO;
 import com.example.homeease.Dto.ServiceDTO;
 
 public interface ServiceService {
-    ResponseDTO addService(ServiceDTO serviceDTO);
+    int addService(ServiceDTO serviceDTO);
     ResponseDTO getAllServices();
     ResponseDTO getServiceById(int serviceId);
     ResponseDTO updateService(int serviceId, ServiceDTO serviceDTO);

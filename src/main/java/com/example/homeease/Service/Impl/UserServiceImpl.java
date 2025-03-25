@@ -55,7 +55,34 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         }
     }
 
+    @Override
+    public ResponseDTO getUserIdByEmail(String email) {
+        try {
+            int idByEmail = userRepository.findUserIdByEmailAddress(email);
+            if (idByEmail == 0) {
+                return new ResponseDTO(VarList.Bad_Request, "No Service Provider found", null);
+            }
+            return new ResponseDTO(VarList.OK, "Success", idByEmail);
+        }catch (Exception e) {
+            return new ResponseDTO(VarList.Internal_Server_Error, "Internal server error", null);
+        }
+    }
 
+    @Override
+    public ResponseDTO getAllServiceProviderIds() {
+        try {
+            List<Integer> providerIds = userRepository.findAllServiceProviderIds();
+
+            if (providerIds.isEmpty()) {
+                return new ResponseDTO(VarList.Bad_Request, "No service providers found", null);
+            }
+
+            return new ResponseDTO(VarList.OK, "Success", providerIds);
+
+        } catch (Exception e) {
+            return new ResponseDTO(VarList.Internal_Server_Error, "Internal server error: " + e.getMessage(), null);
+        }
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

@@ -24,7 +24,42 @@ function login() {
             alert("Login successful");
             localStorage.setItem("token", response.data.token);
             console.log(response.data.token)
-            // kamthi navigation ekak danna
+            // Assuming the token is stored in localStorage
+            const token = localStorage.getItem("token");
+
+            if (token) {
+                try {
+                    // Decode the token
+                    const decodedToken = jwt_decode(token);
+
+                    // Extract the role from the token payload
+                    const role = decodedToken.role; // Assuming the role is stored in the "role" claim
+
+                    console.log("Decoded Token:", decodedToken);
+                    console.log("User Role:", role);
+
+                    // Perform actions based on the role
+                    if (role === "SERVICE_PROVIDER") {
+                        console.log("User is a Service Provider");
+                        // Redirect or show provider-specific content
+                    } else if (role === "CUSTOMER") {
+                        console.log("User is a Customer");
+                        setTimeout(function() {
+                            window.location.href = "../view/index.html"; // Replace with your login page URL
+                        }, 500);
+                        // Redirect or show customer-specific content
+                    }  else if (role === "ADMIN") {
+                        console.log("User is a Customer");
+                        // Redirect or show customer-specific content
+                    } else {
+                        console.log("Unknown role");
+                    }
+                } catch (error) {
+                    console.error("Failed to decode token:", error);
+                }
+            } else {
+                console.error("No token found in localStorage");
+            }
 
         },
 

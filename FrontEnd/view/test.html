@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Navbar - kept from original code */
+        .navbar {
+            background: linear-gradient(10deg, #FFD700, #e3c10e);
+            transition: all 0.3s ease-in-out;
+            color: #000;
+            padding: 0.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-radius: 0% 0% 5% 5%;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: #000;
+        }
+
+        .navbar .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .navbar .nav-links a {
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .navbar .nav-links a:hover {
+            color: white;
+        }
+
+        /* Improved Category Section */
+        .category-section {
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .section-title {
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            color: #333;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title:after {
+            content: '';
+            display: block;
+            width: 50%;
+            height: 3px;
+            background: #FFD700;
+            margin: 8px auto 0;
+            border-radius: 2px;
+        }
+
+        .category-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .category-wrapper {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            gap: 20px;
+            padding: 10px 0;
+        }
+
+        .category-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category {
+            flex: 0 0 auto;
+            width: 190px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .category.active {
+            background: linear-gradient(45deg, #FFD700, #e3c10e);
+        }
+
+        .category.active span {
+            color: #000;
+        }
+
+        .category img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .category:hover img {
+            transform: scale(1.1);
+        }
+
+        .category span {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .scroll-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .scroll-btn:hover {
+            background: #FFD700;
+        }
+
+        .scroll-left {
+            left: 5px;
+        }
+
+        .scroll-right {
+            right: 5px;
+        }
+
+        /* Improved Service Section */
+        .service-section {
+            padding: 40px 0;
+            background-color: white;
+            border-radius: 15px;
+            margin: 20px auto;
+            max-width: 1200px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .service-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            padding: 20px;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .service-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .service-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .service-content {
+            padding: 15px;
+        }
+
+        .service-card h3 {
+            margin: 0 0 10px;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .service-card p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .service-card .service-price {
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .service-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .service-footer .rating {
+            color: #FFD700;
+        }
+
+        .book-btn {
+            background: linear-gradient(45deg, #FFD700, #e3c10e);
+            color: black;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .book-btn:hover {
+            background: linear-gradient(45deg, #e3c10e, #FFD700);
+            transform: scale(1.05);
+        }
+
+        /* Footer - kept from original code */
+        .footer {
+            background-color: #333;
+            color: #fff;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .footer .social-links {
+            margin-top: 1rem;
+        }
+
+        .footer .social-links a {
+            color: #fff;
+            margin: 0 0.5rem;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer .social-links a:hover {
+            color: #FFD700;
+        }
+
+        @media (max-width: 768px) {
+            .service-container {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+
+            .category {
+                width: 110px;
+            }
+
+            .category img {
+                width: 70px;
+                height: 70px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .service-container {
+                grid-template-columns: 1fr;
+            }
+
+            .category {
+                width: 100px;
+            }
+
+            .category img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="container">
+        <a href="#" class="logo">HomeEase</a>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <a href="../view/login.html" class="login-btn">
+            <i class="fas fa-user"></i> Login
+        </a>
+        <!-- Role Selection Toggle -->
+        <div class="role-toggle">
+            <label class="switch">
+                <input type="checkbox" id="roleToggle">
+                <span class="slider"></span>
+            </label>
+            <span id="roleLabel">Customer</span>
+        </div>
+        <div class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+</nav>
+
+<!-- Category Section (Improved) -->
+<section class="category-section">
+    <h2 class="section-title">Browse Categories</h2>
+    <div class="category-container">
+        <button class="scroll-btn scroll-left" id="scrollLeft">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="category-wrapper" id="categoryWrapper">
+            <!-- Categories will be loaded here by JavaScript -->
+        </div>
+        <button class="scroll-btn scroll-right" id="scrollRight">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+</section>
+
+<!-- Service Section (Improved) -->
+<section class="service-section">
+    <h2 class="section-title" id="serviceTitle">Web Design Services</h2>
+    <div class="service-container" id="serviceContainer">
+        <!-- Services will be loaded here by JavaScript -->
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2023 HomeEase. All rights reserved.</p>
+        <div class="social-links">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const categoryWrapper = document.getElementById("categoryWrapper");
+        const serviceContainer = document.getElementById("serviceContainer");
+        const serviceTitle = document.getElementById("serviceTitle");
+        const scrollLeftBtn = document.getElementById("scrollLeft");
+        const scrollRightBtn = document.getElementById("scrollRight");
+
+        // Dummy category data
+        const categories = [
+            { id: 1, name: "Web Design", image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg" },
+            { id: 2, name: "App Development", image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg" },
+            { id: 3, name: "SEO", image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg" },
+            { id: 4, name: "Graphic Design", image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg" },
+            { id: 5, name: "Digital Marketing", image: "https://via.placeholder.com/100" },
+            { id: 6, name: "Photography", image: "https://via.placeholder.com/100" },
+            { id: 7, name: "Content Writing", image: "https://via.placeholder.com/100" },
+            { id: 8, name: "Video Editing", image: "https://via.placeholder.com/100" },
+            { id: 9, name: "UI/UX Design", image: "https://via.placeholder.com/100" },
+            { id: 10, name: "3D Modeling", image: "https://via.placeholder.com/100" }
+        ];
+
+        // Dummy services data with more detailed info
+        const services = {
+            1: [
+                { name: "Landing Page", price: "$299", rating: 4.9, image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg", description: "Custom landing page optimized for conversions" },
+                { name: "E-commerce Site", price: "$999", rating: 4.7, image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg", description: "Full featured online store with payment integration" },
+                { name: "Corporate Website", price: "$799", rating: 4.8, image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg", description: "Professional business website with multiple pages" },
+                { name: "Blog Setup", price: "$399", rating: 4.6, image: "https://via.placeholder.com/150", description: "Custom blog with content management system" },
+            { name: "Landing Page", price: "$299", rating: 4.9, image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg", description: "Custom landing page optimized for conversions" },
+                { name: "E-commerce Site", price: "$999", rating: 4.7, image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg", description: "Full featured online store with payment integration" },
+                { name: "Corporate Website", price: "$799", rating: 4.8, image: "https://i.pinimg.com/736x/55/09/fc/5509fcaa67a5468218592d908171562e.jpg", description: "Professional business website with multiple pages" },
+                { name: "Blog Setup", price: "$399", rating: 4.6, image: "https://via.placeholder.com/150", description: "Custom blog with content management system" }
+            ],
+            2: [
+                { name: "Android App", price: "$1299", rating: 4.8, image: "https://via.placeholder.com/150", description: "Native Android application development" },
+                { name: "iOS App", price: "$1499", rating: 4.9, image: "https://via.placeholder.com/150", description: "Native iOS application with App Store submission" },
+                { name: "Cross-platform App", price: "$1899", rating: 4.7, image: "https://via.placeholder.com/150", description: "Flutter/React Native app for both platforms" }
+            ],
+            3: [
+                { name: "On-Page SEO", price: "$399", rating: 4.8, image: "https://via.placeholder.com/150", description: "Optimize your website for search engines" },
+                { name: "Keyword Research", price: "$299", rating: 4.7, image: "https://via.placeholder.com/150", description: "In-depth analysis of valuable keywords" },
+                { name: "Link Building", price: "$499", rating: 4.6, image: "https://via.placeholder.com/150", description: "Quality backlinks to boost your ranking" }
+            ],
+            4: [
+                { name: "Logo Design", price: "$199", rating: 4.9, image: "https://via.placeholder.com/150", description: "Professional logo with multiple revisions" },
+                { name: "Business Cards", price: "$99", rating: 4.8, image: "https://via.placeholder.com/150", description: "Print-ready business card designs" },
+                { name: "Branding Package", price: "$499", rating: 4.9, image: "https://via.placeholder.com/150", description: "Complete brand identity with style guide" }
+            ],
+            5: [
+                { name: "Google Ads", price: "$299/mo", rating: 4.7, image: "https://via.placeholder.com/150", description: "Managed Google Ads campaigns" },
+                { name: "Social Media Ads", price: "$249/mo", rating: 4.8, image: "https://via.placeholder.com/150", description: "Facebook, Instagram ad management" }
+            ],
+            6: [
+                { name: "Wedding Photography", price: "$999", rating: 4.9, image: "https://via.placeholder.com/150", description: "Full day wedding photography service" },
+                { name: "Product Photography", price: "$399", rating: 4.8, image: "https://via.placeholder.com/150", description: "Studio product shots for e-commerce" }
+            ],
+            7: [
+                { name: "Blog Posts", price: "$99", rating: 4.7, image: "https://via.placeholder.com/150", description: "SEO-optimized blog content" },
+                { name: "Website Copy", price: "$299", rating: 4.8, image: "https://via.placeholder.com/150", description: "Professional website copywriting" }
+            ],
+            8: [
+                { name: "Video Editing", price: "$199", rating: 4.6, image: "https://via.placeholder.com/150", description: "Professional video editing services" },
+                { name: "Motion Graphics", price: "$299", rating: 4.7, image: "https://via.placeholder.com/150", description: "Custom motion graphics and animations" }
+            ],
+            9: [
+                { name: "UI Design", price: "$599", rating: 4.8, image: "https://via.placeholder.com/150", description: "User interface design for websites/apps" },
+                { name: "UX Research", price: "$799", rating: 4.9, image: "https://via.placeholder.com/150", description: "In-depth user experience research" }
+            ],
+            10: [
+                { name: "3D Product Models", price: "$299", rating: 4.7, image: "https://via.placeholder.com/150", description: "Detailed 3D models for products" },
+                { name: "Architectural 3D", price: "$899", rating: 4.8, image: "https://via.placeholder.com/150", description: "Architectural visualizations and renders" }
+            ]
+        };
+
+        // Load categories dynamically
+        function loadCategories() {
+            categoryWrapper.innerHTML = "";
+            categories.forEach((category, index) => {
+                const categoryElement = document.createElement("div");
+                categoryElement.classList.add("category");
+                if (index === 0) categoryElement.classList.add("active");
+                categoryElement.setAttribute("data-category", category.id);
+                categoryElement.innerHTML = `
+        <img src="${category.image}" alt="${category.name}">
+        <span>${category.name}</span>
+      `;
+                categoryElement.addEventListener("click", () => {
+                    // Remove active class from all categories
+                    document.querySelectorAll(".category").forEach(cat => {
+                        cat.classList.remove("active");
+                    });
+                    // Add active class to clicked category
+                    categoryElement.classList.add("active");
+                    loadServices(category.id);
+                    serviceTitle.textContent = `${category.name} Services`;
+                });
+                categoryWrapper.appendChild(categoryElement);
+            });
+        }
+
+        // Load services dynamically
+        function loadServices(categoryId) {
+            serviceContainer.innerHTML = "";
+            (services[categoryId] || []).forEach(service => {
+                const serviceElement = document.createElement("div");
+                serviceElement.classList.add("service-card");
+                serviceElement.innerHTML = `
+        <img src="${service.image}" alt="${service.name}">
+        <div class="service-content">
+          <h3>${service.name}</h3>
+          <p>${service.description}</p>
+          <div class="service-footer">
+            <span class="service-price">${service.price}</span>
+            <span class="rating">
+              ${getRatingStars(service.rating)}
+            </span>
+          </div>
+          <button class="book-btn">Book Now</button>
+        </div>
+      `;
+                serviceContainer.appendChild(serviceElement);
+            });
+        }
+
+        // Generate star rating HTML
+        function getRatingStars(rating) {
+            let stars = '';
+            const fullStars = Math.floor(rating);
+            const halfStar = rating % 1 >= 0.5;
+
+            for (let i = 0; i < fullStars; i++) {
+                stars += '<i class="fas fa-star"></i>';
+            }
+
+            if (halfStar) {
+                stars += '<i class="fas fa-star-half-alt"></i>';
+            }
+
+            return stars;
+        }
+
+        // Scroll functionality for category wrapper
+        scrollLeftBtn.addEventListener("click", () => {
+            categoryWrapper.scrollBy({ left: -300, behavior: "smooth" });
+        });
+
+        scrollRightBtn.addEventListener("click", () => {
+            categoryWrapper.scrollBy({ left: 300, behavior: "smooth" });
+        });
+
+        // Load categories on page load
+        loadCategories();
+        loadServices(1); // Default to the first category's services
+    });
+    // Form submission
+    const searchForm = document.querySelector('.search-form');
+
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Get form values
+        const location = document.getElementById('location').value;
+        const keyword = document.getElementById('keyword').value.toLowerCase();
+        const category = document.getElementById('category').value;
+        const price = document.getElementById('priceRange').value;
+
+        // Get ratings (checked checkboxes)
+        const ratingCheckboxes = document.querySelectorAll('.rating-option input:checked');
+        const ratings = Array.from(ratingCheckboxes).map(cb => cb.value);
+
+        // Get availability options
+        const availabilityCheckboxes = document.querySelectorAll('.availability-option input:checked');
+        const availability = Array.from(availabilityCheckboxes).map(cb => cb.value);
+
+        // Filter service cards by keyword
+        const serviceCards = document.querySelectorAll('.service-card'); // Adjust selector to match your card class
+
+        serviceCards.forEach(card => {
+            const cardContent = card.textContent.toLowerCase();
+            const cardTitle = card.querySelector('.service-title')?.textContent.toLowerCase() || ''; // Adjust selector
+            const cardDescription = card.querySelector('.service-description')?.textContent.toLowerCase() || ''; // Adjust selector
+
+            // Check if keyword is found in card content, title or description
+            const matchesKeyword = keyword === '' ||
+                cardContent.includes(keyword) ||
+                cardTitle.includes(keyword) ||
+                cardDescription.includes(keyword);
+
+            // Check if location matches
+            const cardLocation = card.getAttribute('data-location') || 'all';
+            const matchesLocation = location === 'all' || cardLocation === location;
+
+            // Check if category matches
+            const cardCategory = card.getAttribute('data-category') || 'all';
+            const matchesCategory = category === 'all' || cardCategory === category;
+
+            // Show or hide the card based on filter matches
+            if (matchesKeyword && matchesLocation && matchesCategory) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Scroll to services section
+        document.querySelector('.service-section').scrollIntoView({
+            behavior: 'smooth'
+        });
+
+
+
+        // After filtering the cards, check if any are visible
+        const visibleCards = Array.from(serviceCards).filter(card => card.style.display !== 'none');
+        const resultsContainer = document.querySelector('.services-container'); // Adjust to match your container
+
+        if (visibleCards.length === 0 && keyword !== '') {
+            // If no results and a keyword was entered
+            if (!document.querySelector('.no-results-message')) {
+                const noResultsMsg = document.createElement('div');
+                noResultsMsg.className = 'no-results-message';
+                noResultsMsg.textContent = 'No services found containing "' + keyword + '". Please try different keywords.';
+                noResultsMsg.style.textAlign = 'center';
+                noResultsMsg.style.padding = '30px';
+                noResultsMsg.style.color = '#666';
+                resultsContainer.appendChild(noResultsMsg);
+            }
+        } else {
+            // Remove any existing no-results message
+            const existingMsg = document.querySelector('.no-results-message');
+            if (existingMsg) {
+                existingMsg.remove();
+            }
+        }
+
+            const categoryWrapper = document.getElementById("categoryWrapper");
+            const serviceContainer = document.getElementById("serviceContainer");
+            const serviceTitle = document.getElementById("serviceTitle");
+            const scrollLeftBtn = document.getElementById("scrollLeft");
+            const scrollRightBtn = document.getElementById("scrollRight");
+            const categoryContainer = document.querySelector(".category-container");
+            const serviceSection = document.querySelector(".service-section");
+
+            // User role management - This would normally come from your authentication system
+            let isLoggedIn = false; // Set to true when user logs in
+            let userRole = "guest"; // Options: "guest", "admin", "provider", "customer"
+
+            // Simulate login for testing purposes (remove in production)
+            function simulateLogin(role) {
+                isLoggedIn = true;
+                userRole = role;
+                updateUIBasedOnRole();
+            }
+
+            // Check URL parameters for testing login (remove in production)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('role')) {
+                simulateLogin(urlParams.get('role'));
+            }
+
+            // Function to update UI based on user role
+            function updateUIBasedOnRole() {
+                // Remove any existing role-specific buttons first
+                const existingAddBtn = document.getElementById("addCategoryBtn");
+                if (existingAddBtn) existingAddBtn.remove();
+
+                const existingServiceBtn = document.getElementById("addServiceBtn");
+                if (existingServiceBtn) existingServiceBtn.remove();
+
+                // Add Category button for Admin
+                if (isLoggedIn && userRole === "admin") {
+                    const addCategoryBtn = document.createElement("button");
+                    addCategoryBtn.id = "addCategoryBtn";
+                    addCategoryBtn.innerHTML = '<i class="fas fa-plus"></i> Add Category';
+                    addCategoryBtn.className = "add-btn add-category-btn";
+                    categoryContainer.appendChild(addCategoryBtn);
+
+                    // Add event listener for the Add Category button
+                    addCategoryBtn.addEventListener("click", function() {
+                        alert("Add Category functionality would open here");
+                        // Here you would open a modal or redirect to an add category page
+                    });
+                }
+
+                // Add Service button for Service Provider
+                if (isLoggedIn && userRole === "provider") {
+                    const addServiceBtn = document.createElement("button");
+                    addServiceBtn.id = "addServiceBtn";
+                    addServiceBtn.innerHTML = '<i class="fas fa-plus"></i> Add Service';
+                    addServiceBtn.className = "add-btn add-service-btn";
+                    serviceSection.insertBefore(addServiceBtn, serviceContainer);
+
+                    // Add event listener for the Add Service button
+                    addServiceBtn.addEventListener("click", function() {
+                        alert("Add Service functionality would open here");
+                        // Here you would open a modal or redirect to an add service page
+                    });
+                }
+            }
+
+            // Dummy category data
+            const categories = [
+                // Your existing categories...
+            ];
+
+            // Dummy services data
+            const services = {
+                // Your existing services...
+            };
+
+            // Load categories dynamically
+            function loadCategories() {
+                // Your existing loadCategories function...
+            }
+
+            // Load services dynamically
+            function loadServices(categoryId) {
+                // Your existing loadServices function...
+            }
+
+            // Generate star rating HTML
+            function getRatingStars(rating) {
+                // Your existing getRatingStars function...
+            }
+
+            // Scroll functionality for category wrapper
+            scrollLeftBtn.addEventListener("click", () => {
+                categoryWrapper.scrollBy({ left: -300, behavior: "smooth" });
+            });
+
+            scrollRightBtn.addEventListener("click", () => {
+                categoryWrapper.scrollBy({ left: 300, behavior: "smooth" });
+            });
+
+            // Add the login button event listener
+            const loginBtn = document.querySelector('.login-btn');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function(e) {
+                    // This would normally redirect to login page, but for demo we'll simulate login
+                    e.preventDefault();
+                    // Toggle between admin and provider for testing
+                    const newRole = userRole === "admin" ? "provider" : "admin";
+                    simulateLogin(newRole);
+                    alert(`Logged in as ${newRole}`);
+                });
+            }
+
+            // Initialize the page
+            loadCategories();
+            loadServices(1); // Default to the first category's services
+            updateUIBasedOnRole(); // Check initial role status
+
+
+
+
+    });
+
+
+
+</script>
+</body>
+</html>
+
+<!--
+please modify, when admin login display add category button near categories.when service provider login display add service button -->

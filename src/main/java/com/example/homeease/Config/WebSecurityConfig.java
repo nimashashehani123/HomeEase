@@ -60,6 +60,8 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/api/v1/auth/authenticate",
                                 "/api/v1/users/register",
+                                "/api/v1/categories/all",
+                                "/uploads/**",
                                 "/api/v1/auth/refreshToken",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
@@ -84,4 +86,7 @@ public class WebSecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
+
+
+
 }

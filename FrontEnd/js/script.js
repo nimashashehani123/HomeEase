@@ -39,25 +39,71 @@ window.addEventListener('click', (event) => {
 });
 
 // Form Submission
-document.getElementById('providerLoginForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-
+function login() {
     const email = document.getElementById('providerEmail').value;
     const password = document.getElementById('providerPassword').value;
 
-    // Basic validation
-    if (!email || !password) {
-        alert('Please fill out all fields.');
-        return;
-    }
+    $.ajax({
+        url: 'http://localhost:8080/api/v1/auth/authenticate',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            email: email,
+            password: password
+        }),
+        success: function (response) {
+            alert("Login successful");
+            localStorage.setItem("token", response.data.token);
+            console.log(response.data.token)
+            // Assuming the token is stored in localStorage
+            const token = localStorage.getItem("token");
 
-    // Simulate backend login
-    alert('Provider login successful!');
-    providerLoginModal.style.display = 'none'; // Close the modal
-    roleToggle.checked = false; // Reset the toggle
-    roleLabel.textContent = 'Customer';
-});
+            if (token) {
+                try {
+                    // Decode the token
+                    const decodedToken = jwt_decode(token);
 
+                    // Extract the role from the token payload
+                    const role = decodedToken.role; // Assuming the role is stored in the "role" claim
+
+                    console.log("Decoded Token:", decodedToken);
+                    console.log("User Role:", role);
+
+                    // Perform actions based on the role
+                    if (role === "SERVICE_PROVIDER") {
+                        console.log("User is a Service Provider");
+                        closeModal.addEventListener('click', () => {
+                            providerLoginModal.style.display = 'none';
+                            roleToggle.checked = false; // Reset the toggle
+                            roleLabel.textContent = 'Customer';
+                        });
+                        setTimeout(function() {
+                            window.location.href = "../view/services.html"; // Replace with your login page URL
+                        }, 500);
+                        // Redirect or show provider-specific content
+                    } else if (role === "CUSTOMER") {
+                        console.log("User is a Customer");
+                        // Redirect or show customer-specific content
+                    }  else if (role === "ADMIN") {
+                        console.log("User is a Customer");
+                        // Redirect or show customer-specific content
+                    } else {
+                        console.log("Unknown role");
+                    }
+                } catch (error) {
+                    console.error("Failed to decode token:", error);
+                }
+            } else {
+                console.error("No token found in localStorage");
+            }
+
+        },
+
+        error: function (xhr, status, error) {
+            alert("Login failed")
+        }
+    });
+}
 // Contact Form Submission
 document.getElementById('contactForm').addEventListener('submit', function (e) {
     e.preventDefault();

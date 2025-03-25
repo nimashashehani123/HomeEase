@@ -27,36 +27,6 @@ public class UserController {
         this.jwtUtil = jwtUtil;
     }
 
-    /*  @PostMapping("/rejister")
-      public ResponseEntity<ResponseDTO> addUser(@RequestBody UserDTO userDTO) {
-          try {
-          int res = userService.addUser(userDTO);
-          switch (res) {
-              case VarList.Created -> {
-                  String token = jwtUtil.generateToken(userDTO);
-                  AuthDTO authDTO = new AuthDTO();
-                  authDTO.setEmail(userDTO.getEmail());
-                  authDTO.setToken(token);
-                  System.out.println(token);
-                  return ResponseEntity.status(HttpStatus.OK) // Use OK for successful login
-                          .body(new ResponseDTO(VarList.OK, "Signup Successfully", authDTO));
-              }
-              case VarList.Not_Acceptable -> {
-                  return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
-                          .body(new ResponseDTO(VarList.Not_Acceptable, "Email Already Used", null));
-              }
-              default -> {
-                  return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
-                          .body(new ResponseDTO(VarList.Bad_Gateway, "Error", null));
-              }
-          }
-          } catch (Exception e) {
-              return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                      .body(new ResponseDTO(VarList.Internal_Server_Error, e.getMessage(), null));
-          }
-          }
-
-  */
     @PostMapping("/register")
     public ResponseEntity<ResponseDTO> addUser(@RequestBody UserDTO userDTO) {
         System.out.println("register");
@@ -89,39 +59,35 @@ public class UserController {
         }
     }
 
-  /*  @PostMapping("/login")
-    public ResponseEntity<ResponseDTO> loginUser(@RequestBody UserDTO userDTO) {
+    @GetMapping("/allProviderIds")
+    @PreAuthorize("hasRole('SERVICE_PROVIDER')")
+    public ResponseEntity<ResponseDTO> getAllCategoryIds() {
         try {
-            int res = userService.lo(userDTO);
-            switch (res) {
-                case VarList.OK -> {
-                    String token = jwtUtil.generateToken(userDTO);
-                    AuthDTO authDTO = new AuthDTO();
-                    authDTO.setEmail(userDTO.getEmail());
-                    authDTO.setToken(token);
-                    System.out.println(token);
-                    return ResponseEntity.status(HttpStatus.OK) // Use OK for successful login
-                            .body(new ResponseDTO(VarList.OK, "Login Successful", authDTO));
-                }
-                case VarList.User_Not_Found -> {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND) // Use NOT_FOUND for user not found
-                            .body(new ResponseDTO(VarList.User_Not_Found, "User not found", null));
-                }
-                case VarList.Invalid_Credentials -> {
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED) // Use UNAUTHORIZED for invalid credentials
-                            .body(new ResponseDTO(VarList.Invalid_Credentials, "Invalid credentials", null));
-                }
-                default -> {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST) // Use BAD_REQUEST for other errors
-                            .body(new ResponseDTO(VarList.Bad_Request, "Invalid request", null));
-                }
-            }
+            ResponseDTO responseDTO = userService.getAllServiceProviderIds();
+            System.out.println(responseDTO);
+            return ResponseEntity.ok()
+                    .body(new ResponseDTO(VarList.OK, "Success", responseDTO));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDTO(VarList.Internal_Server_Error, e.getMessage(), null));
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "Error: " + e.getMessage(), null));
         }
-    }*/
+    }
 
+    @GetMapping("/getidbyemail")
+    @PreAuthorize("hasAuthority('SERVICE_PROVIDER')")
+    public ResponseEntity<ResponseDTO> getIdByEmail(
+            @RequestParam String email) {
+        try {
+            ResponseDTO responseDTO = userService.getUserIdByEmail(email);
+            return ResponseEntity.ok()
+                    .body(new ResponseDTO(VarList.OK, "Success", responseDTO));
+        }catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "Error: " + e.getMessage(), null));
+        }
+    }
 
 
     @PutMapping

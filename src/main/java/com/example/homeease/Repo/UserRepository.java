@@ -4,6 +4,7 @@ import com.example.homeease.Entity.User;
 import com.example.homeease.enums.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,4 +20,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query(value = "SELECT email FROM user" ,nativeQuery = true)
     List<User> getUsers(User user);
+
+    @Query("SELECT u.userId FROM User u WHERE u.role = 'SERVICE_PROVIDER'")
+    List<Integer> findAllServiceProviderIds();
+
+    @Query("SELECT u.userId FROM User u WHERE u.email = :email")
+    int findUserIdByEmailAddress(@Param("email") String email);
+
 }
