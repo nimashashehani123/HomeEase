@@ -508,7 +508,7 @@ document.addEventListener("DOMContentLoaded", function() {
         success: function(data) {
           renderCategories(data.data.data);
           // Load default category services
-        /*  loadServices(activeCategoryId);*/
+          loadServices(activeCategoryId);
         },
         error: function(xhr, status, error) {
           console.error("Error fetching categories:", error);
