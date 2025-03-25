@@ -4,7 +4,7 @@ import com.example.homeease.Dto.ResponseDTO;
 import com.example.homeease.Dto.CategoryDTO;
 
 public interface CategoryService {
-    ResponseDTO addCategory(CategoryDTO categoryDTO);
+    int addCategory(CategoryDTO categoryDTO);
     ResponseDTO getAllCategories();
     ResponseDTO getCategoryById(int categoryId);
     ResponseDTO updateCategory(int categoryId, CategoryDTO categoryDTO);

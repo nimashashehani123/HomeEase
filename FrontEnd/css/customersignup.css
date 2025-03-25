@@ -83,13 +83,14 @@ body {
 }
 
 /* Left Side: Login/Signup Form */
-.login-form {
+#signupForm ,#providerSignupForm{
     flex: 1;
     padding: 2rem;
     max-width: 50%;
+    margin: 2rem; /* Added margin to the form */
 }
 
-.login-form h2 {
+#signupForm h2 {
     font-size: 2rem;
     margin-bottom: 1.5rem;
     color: #333;
@@ -200,7 +201,7 @@ body {
         flex-direction: column;
     }
 
-    .login-form,
+    #signupForm,
     .agreements-benefits {
         max-width: 100%;
     }
@@ -256,6 +257,7 @@ body {
 .footer .social-links a:hover {
     color: #FFD700;
 }
+
 .error-message {
     color: red;
     font-size: 0.875rem;

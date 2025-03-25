@@ -8,4 +8,9 @@ import org.springframework.stereotype.Repository;
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
     // Custom query methods can be added here
     Category findByCategoryName(String categoryName); // Find category by name
+  /*  @Override
+    default <S extends Category> S save(S entity) {
+        System.out.println("Repository saving: " + entity);
+        return saveAndFlush(entity);
+    }*/
 }

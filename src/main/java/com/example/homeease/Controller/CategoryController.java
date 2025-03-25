@@ -3,10 +3,22 @@ package com.example.homeease.Controller;
 import com.example.homeease.Dto.ResponseDTO;
 import com.example.homeease.Dto.CategoryDTO;
 import com.example.homeease.Service.CategoryService;
+import com.example.homeease.Utill.VarList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/categories")
@@ -15,16 +27,78 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @PostMapping
-    public ResponseEntity<ResponseDTO> addCategory(@RequestBody CategoryDTO categoryDTO) {
-        ResponseDTO response = categoryService.addCategory(categoryDTO);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseDTO> addCategory(
+            @RequestPart("categoryDTO") CategoryDTO categoryDTO,
+            @RequestPart("file") MultipartFile file) {  // Changed from @RequestParam to @RequestPart
+        System.out.println("Received categoryDTO: " + categoryDTO);
+        System.out.println("Received file: " + (file != null ? file.getOriginalFilename() : "null"));
+        try {
+            String imagePath = null;
+            if (!file.isEmpty()) {
+                String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+                String uploadDir = "uploads/";
+
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                Path path = Paths.get(uploadDir + filename);
+                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+              imagePath = (uploadDir + filename);
+            }
+            // Set image path in DTO
+            categoryDTO.setImage(imagePath);
+
+            // Save to database
+            int result = categoryService.addCategory(categoryDTO);
+
+            if (result == VarList.Created) {
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(new ResponseDTO(VarList.Created, "Category created", categoryDTO));
+            } else {
+                return ResponseEntity.status(HttpStatus.valueOf(result))
+                        .body(new ResponseDTO(result, "Failed to create category", null));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "Error: " + e.getMessage(), null));
+        }
+    }
+    @GetMapping("/all")
+    public ResponseEntity<ResponseDTO> getAllCategories() {
+        try {
+            List<CategoryDTO> categories = (List<CategoryDTO>) categoryService.getAllCategories();
+            return ResponseEntity.ok()
+                    .body(new ResponseDTO(VarList.OK, "Success", categories));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "Error: " + e.getMessage(), null));
+        }
     }
 
-    @GetMapping
-    public ResponseEntity<ResponseDTO> getAllCategories() {
-        ResponseDTO response = categoryService.getAllCategories();
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
+    @GetMapping("/image/{categoryId}")
+    public ResponseEntity<byte[]> getCategoryImage(@PathVariable int categoryId) {
+        try {
+            CategoryDTO category =(CategoryDTO) (categoryService.getCategoryById(categoryId)).getData();
+            if (category == null || category.getImage() == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Path path = Paths.get(category.getImage());
+            byte[] imageBytes = Files.readAllBytes(path);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(Files.probeContentType(path)))
+                    .body(imageBytes);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/{categoryId}")

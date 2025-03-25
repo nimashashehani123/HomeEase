@@ -6,11 +6,14 @@ import com.example.homeease.Dto.CategoryDTO;
 import com.example.homeease.Entity.Category;
 import com.example.homeease.Repo.CategoryRepository;
 import com.example.homeease.Service.CategoryService;
+import com.example.homeease.Utill.VarList;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,21 +25,71 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private ModelMapper modelMapper;
 
-    @Override
-    public ResponseDTO addCategory(CategoryDTO categoryDTO) {
-        if (categoryRepository.existsById(categoryDTO.getCategoryId())) {
-            return new ResponseDTO(400, "Category already exists with id: " + categoryDTO.getCategoryId(), null);
-        }
-        Category category = modelMapper.map(categoryDTO, Category.class);
-        categoryRepository.save(category);
-        return new ResponseDTO(200, "Category added successfully", categoryDTO);
-    }
+    @Value("${app.base-url}") // Configure in application.properties
+    private String baseUrl;
+
+    @Value("${app.upload-dir}")
+    private String uploadDir;
 
     @Override
+    @Transactional
+    public int addCategory(CategoryDTO categoryDTO) {
+        try {
+
+            // Ensure required fields are present
+            if (categoryDTO.getCategoryName() == null || categoryDTO.getCategoryName().trim().isEmpty()) {
+                return VarList.Bad_Request; // 400 - Missing name
+            }
+
+            // Manual mapping to ensure all fields are set
+            Category category = new Category();
+            category.setCategoryName(categoryDTO.getCategoryName());
+            category.setImage(categoryDTO.getImage());
+            // Set all other necessary fields...
+
+            // Debug logging
+            System.out.println("Saving category: " + category);
+
+            Category savedCategory = categoryRepository.save(category);
+
+            // Verify save operation
+            if (savedCategory.getCategoryId() != 0) {
+                System.out.println("Saved successfully with ID: " + savedCategory.getCategoryId());
+                return VarList.Created; // 201 - Success
+            } else {
+                System.out.println("Save operation failed");
+                return VarList.Internal_Server_Error; // 500 - Save failed
+            }
+
+        } catch (Exception e) {
+            System.out.println("Exception in addCategory: " + e.getMessage());
+            e.printStackTrace();
+            return VarList.Internal_Server_Error; // 500
+        }
+    }
+
+    // In your CategoryService.java
     public ResponseDTO getAllCategories() {
-        List<CategoryDTO> categoryList = modelMapper.map(categoryRepository.findAll(),
-                new TypeToken<List<CategoryDTO>>() {}.getType());
-        return new ResponseDTO(200, "Categories retrieved successfully", categoryList);
+        List<Category> categories = categoryRepository.findAll();
+        List<CategoryDTO> dtos = new ArrayList<>();
+
+        for (Category category : categories) {
+            CategoryDTO dto = new CategoryDTO();
+            dto.setCategoryId(category.getCategoryId());
+            dto.setCategoryName(category.getCategoryName());
+
+            // Fix image URL construction
+            if (category.getImage() != null) {
+                String cleanImagePath = category.getImage().replace("http://localhost:8080/uploads/", "");
+                dto.setImage(baseUrl + "/uploads/" + cleanImagePath);
+            } else {
+                dto.setImage(baseUrl + "/images/default.jpg");
+            }
+
+            dtos.add(dto);
+        }
+
+        return new ResponseDTO(200, "Success", dtos);
     }
 
     @Override
