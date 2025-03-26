@@ -85,7 +85,6 @@ public class ServiceController {
     }
 
 
-
     @GetMapping
     public ResponseEntity<ResponseDTO> getAllServices() {
         ResponseDTO response = serviceService.getAllServices();

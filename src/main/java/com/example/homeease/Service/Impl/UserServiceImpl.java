@@ -2,6 +2,7 @@ package com.example.homeease.Service.Impl;
 
 import com.example.homeease.Advisor.ResourceNotFoundException;
 import com.example.homeease.Dto.ResponseDTO;
+import com.example.homeease.Dto.ServiceDTO;
 import com.example.homeease.Dto.UserDTO;
 import com.example.homeease.Entity.User;
 import com.example.homeease.Repo.UserRepository;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -169,10 +171,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public ResponseDTO getUserById(int userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
-        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-        return new ResponseDTO(VarList.OK, "User retrieved successfully", userDTO);
+        Optional<User> user = userRepository.findById(userId);
+
+        UserDTO dto = modelMapper.map(user, UserDTO.class);
+
+        return new ResponseDTO(200, "Success", dto);
     }
     
 

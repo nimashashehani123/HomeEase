@@ -1,5 +1,6 @@
 package com.example.homeease.Repo;
 
+import com.example.homeease.Entity.Service;
 import com.example.homeease.Entity.User;
 import com.example.homeease.enums.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +18,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     boolean existsByEmail(String email);
     List<User> findByRole(UserRole role); // Find users by role (e.g., CUSTOMER, SERVICE_PROVIDER)
     List<User> findByVerificationStatus(String verificationStatus); // Find users by verification status
+
+    User findByUserId(int userId);
 
     @Query(value = "SELECT email FROM user" ,nativeQuery = true)
     List<User> getUsers(User user);

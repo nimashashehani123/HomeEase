@@ -62,6 +62,8 @@ public class WebSecurityConfig {
                                 "/api/v1/users/register",
                                 "/api/v1/categories/all",
                                 "/api/v1/services/**",
+                                "/api/v1/users/**",
+                                "/api/v1/users/getidbyemail",
                                 "/api/v1/services/by-category/**",
                                 "/uploads/**",
                                 "/api/v1/auth/refreshToken",

@@ -11,4 +11,5 @@ public class BookingDTO {
     private LocalDateTime bookingDateTime; // Date and time of the booking
     private String status; // Booking status (e.g., Pending, Accepted, Completed, Cancelled)
     private double hoursWorked; // Hours worked for the service (for time-based pricing)
+    private LocalDateTime createAt; //booking create date and time
 }

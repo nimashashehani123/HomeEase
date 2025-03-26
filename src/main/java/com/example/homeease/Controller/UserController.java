@@ -75,7 +75,6 @@ public class UserController {
     }
 
     @GetMapping("/getidbyemail")
-    @PreAuthorize("hasAuthority('SERVICE_PROVIDER')")
     public ResponseEntity<ResponseDTO> getIdByEmail(
             @RequestParam String email) {
         try {
@@ -91,31 +90,34 @@ public class UserController {
 
 
     @PutMapping
-    @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can update users
     public ResponseEntity<ResponseDTO> updateUser(@RequestBody UserDTO userDTO) {
         ResponseDTO response = userService.updateUser(userDTO);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
     @DeleteMapping("/{userId}")
-    @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can delete users
     public ResponseEntity<ResponseDTO> deleteUser(@PathVariable int userId) {
         ResponseDTO response = userService.deleteUser(userId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can view all users
     public ResponseEntity<ResponseDTO> getAllUsers() {
         ResponseDTO response = userService.getAllUsers();
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
     @GetMapping("/{userId}")
-    @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can view user details
     public ResponseEntity<ResponseDTO> getUserById(@PathVariable int userId) {
-        ResponseDTO response = userService.getUserById(userId);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
+        try {
+            ResponseDTO responseDTO = userService.getUserById(userId);
+            return ResponseEntity.ok()
+                    .body(new ResponseDTO(VarList.OK, "Success", responseDTO));
+        }catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "Error: " + e.getMessage(), null));
+        }
     }
     @GetMapping(value = "/get")
     @PreAuthorize("hasAuthority('CUSTOMER')")

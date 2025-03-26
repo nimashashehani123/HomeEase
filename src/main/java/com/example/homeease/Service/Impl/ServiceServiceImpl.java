@@ -114,21 +114,12 @@ public class ServiceServiceImpl implements ServiceService {
     public ResponseDTO getServiceById(int serviceId) {
         Service service = serviceRepository.findByServiceId(serviceId);
 
-            ServiceDTO dto = new ServiceDTO();
-            dto.setServiceId(service.getServiceId());
-            dto.setServiceName(service.getServiceName());
-            dto.setDescription(service.getDescription());
-            dto.setFixedPrice(service.getFixedPrice());
-            dto.setHourlyRate(service.getHourlyRate());
-            dto.setCategoryId(service.getCategory().getCategoryId());
-            dto.setServiceProviderId(service.getServiceProvider().getUserId());
+        ServiceDTO dto = modelMapper.map(service, ServiceDTO.class);
 
-            // Fix image URL construction
-            if (service.getImage() != null) {
-                dto.setImage(service.getImage());
-            } else {
-                dto.setImage("");
-            }
+        // Handle the image field separately if needed
+        if (dto.getImage() == null) {
+            dto.setImage("");
+        }
         return new ResponseDTO(200, "Success", dto);
     }
 
