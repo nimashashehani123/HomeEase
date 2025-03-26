@@ -69,6 +69,23 @@ public class ServiceController {
         }
     }
 
+
+    @GetMapping("/by-category/{categoryId}")
+    public ResponseEntity<ResponseDTO> getServicesByCategoryId(
+            @PathVariable int categoryId) {
+        try {
+            ResponseDTO responseDTO = serviceService.getServicesByCategoryId(categoryId);
+            return ResponseEntity.ok()
+                    .body(new ResponseDTO(VarList.OK, "Success", responseDTO));
+        }catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "Error: " + e.getMessage(), null));
+        }
+    }
+
+
+
     @GetMapping
     public ResponseEntity<ResponseDTO> getAllServices() {
         ResponseDTO response = serviceService.getAllServices();
@@ -77,8 +94,15 @@ public class ServiceController {
 
     @GetMapping("/{serviceId}")
     public ResponseEntity<ResponseDTO> getServiceById(@PathVariable int serviceId) {
-        ResponseDTO response = serviceService.getServiceById(serviceId);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
+        try {
+            ResponseDTO responseDTO = serviceService.getServiceById(serviceId);
+            return ResponseEntity.ok()
+                    .body(new ResponseDTO(VarList.OK, "Success", responseDTO));
+        }catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "Error: " + e.getMessage(), null));
+        }
     }
 
     @PutMapping("/{serviceId}")

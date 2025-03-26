@@ -21,7 +21,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebAppConfig {
-    @Autowired
+  /*  @Autowired
     private UserServiceImpl userService;
     @Autowired
     private JwtFilter jwtFilter;
@@ -47,6 +47,7 @@ public class WebAppConfig {
                                 "/api/v1/auth/authenticate",
                                 "/api/v1/user/register",
                                 "/api/v1/categories/all",
+                                "/api/v1/services/by-category/**",
                                 "/uploads/**",
                                 "/api/v1/auth/refreshToken",
                                 "/v3/api-docs/**",
@@ -58,5 +59,5 @@ public class WebAppConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-    }
+    }*/
 }

@@ -1,6 +1,7 @@
 package com.example.homeease.Service.Impl;
 
 import com.example.homeease.Advisor.ResourceNotFoundException;
+import com.example.homeease.Dto.CategoryDTO;
 import com.example.homeease.Dto.ResponseDTO;
 import com.example.homeease.Dto.ServiceDTO;
 import com.example.homeease.Entity.Category;
@@ -15,7 +16,9 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 public class ServiceServiceImpl implements ServiceService {
@@ -73,6 +76,34 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
+    public ResponseDTO getServicesByCategoryId(int categoryId) {
+        List<Service> services = serviceRepository.findByCategoryId(categoryId);
+        List<ServiceDTO> dtos = new ArrayList<>();
+
+        for (Service service : services) {
+            ServiceDTO dto = new ServiceDTO();
+            dto.setServiceId(service.getServiceId());
+            dto.setServiceName(service.getServiceName());
+            dto.setDescription(service.getDescription());
+            dto.setFixedPrice(service.getFixedPrice());
+            dto.setHourlyRate(service.getHourlyRate());
+            dto.setCategoryId(service.getCategory().getCategoryId());
+            dto.setServiceProviderId(service.getServiceProvider().getUserId());
+
+            // Fix image URL construction
+            if (service.getImage() != null) {
+                dto.setImage(service.getImage());
+            } else {
+                dto.setImage("");
+            }
+
+            dtos.add(dto);
+        }
+
+        return new ResponseDTO(200, "Success", dtos);
+    }
+
+    @Override
     public ResponseDTO getAllServices() {
         List<ServiceDTO> serviceList = modelMapper.map(serviceRepository.findAll(),
                 new TypeToken<List<ServiceDTO>>() {}.getType());
@@ -81,10 +112,24 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public ResponseDTO getServiceById(int serviceId) {
-        Service service = serviceRepository.findById(serviceId)
-                .orElseThrow(() -> new ResourceNotFoundException("Service not found with id: " + serviceId));
-        ServiceDTO serviceDTO = modelMapper.map(service, ServiceDTO.class);
-        return new ResponseDTO(200, "Service retrieved successfully", serviceDTO);
+        Service service = serviceRepository.findByServiceId(serviceId);
+
+            ServiceDTO dto = new ServiceDTO();
+            dto.setServiceId(service.getServiceId());
+            dto.setServiceName(service.getServiceName());
+            dto.setDescription(service.getDescription());
+            dto.setFixedPrice(service.getFixedPrice());
+            dto.setHourlyRate(service.getHourlyRate());
+            dto.setCategoryId(service.getCategory().getCategoryId());
+            dto.setServiceProviderId(service.getServiceProvider().getUserId());
+
+            // Fix image URL construction
+            if (service.getImage() != null) {
+                dto.setImage(service.getImage());
+            } else {
+                dto.setImage("");
+            }
+        return new ResponseDTO(200, "Success", dto);
     }
 
     @Override

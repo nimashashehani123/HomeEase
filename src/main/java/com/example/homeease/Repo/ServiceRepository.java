@@ -2,6 +2,8 @@ package com.example.homeease.Repo;
 
 import com.example.homeease.Entity.Service;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,7 +14,7 @@ public interface ServiceRepository extends JpaRepository<Service, Integer> {
     List<Service> findByCategory_CategoryId(int categoryId); // Find services by category ID
     List<Service> findByServiceProvider_UserId(int serviceProviderId); // Find services by service provider ID
     // Find all services by category ID
-    List<Service> findByCategoryId(int categoryId);
-    List<Service> findByCategoryId1(int categoryId);
-    List<Service> findByCategoryId2(int categoryId);
+    Service findByServiceId(int serviceId);
+    @Query("SELECT s FROM Service s WHERE s.category.categoryId = :categoryId")
+    List<Service> findByCategoryId(@Param("categoryId") int categoryId);
 }

@@ -467,7 +467,6 @@ input:checked + .slider:before {
     scrollbar-width: none;
     -ms-overflow-style: none;
     gap: 20px;
-    padding: 10px 0;
 }
 
 .category-wrapper::-webkit-scrollbar {
@@ -502,7 +501,7 @@ input:checked + .slider:before {
 }
 
 .category img {
-    width: 100px;
+    width: 180px;
     height: 100px;
     border-radius: 10px;
     object-fit: cover;
@@ -641,6 +640,36 @@ input:checked + .slider:before {
 
 .book-btn:hover {
     background: linear-gradient(45deg, #e3c10e, #FFD700);
+    transform: scale(1.05);
+}.edit-btn {
+    background: linear-gradient(45deg, #FFD700, #e3c10e);
+    color: black;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.edit-btn:hover {
+    background: linear-gradient(45deg, #e3c10e, #FFD700);
+    transform: scale(1.05);
+}
+
+.delete-btn {
+    background: linear-gradient(45deg, orangered, red);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+    background: linear-gradient(45deg, darkred, orangered);
     transform: scale(1.05);
 }
 /* Footer */
