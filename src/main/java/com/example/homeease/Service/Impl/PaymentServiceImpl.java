@@ -12,8 +12,12 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -63,23 +67,44 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public ResponseDTO updatePayment(int paymentId, PaymentDTO paymentDTO) {
-        if (!paymentRepository.existsById(paymentId)) {
-            return new ResponseDTO(404, "Payment not found with id: " + paymentId, null);
+    public ResponseDTO getPaymentByBookingId(int bookingId) {
+        Payment payment = paymentRepository.findByBooking_BookingId(bookingId);
+        if (payment == null){
+            return new ResponseDTO(200, "not payment to this booking", null);
         }
 
-        // Fetch the booking from the database
-        Booking booking = bookingRepository.findById(paymentDTO.getBookingId())
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + paymentDTO.getBookingId()));
+        PaymentDTO paymentDTO = modelMapper.map(payment, PaymentDTO.class);
+        paymentDTO.setBookingId(payment.getBooking().getBookingId()); // Set booking ID
+        return new ResponseDTO(200, "Payment retrieved successfully", paymentDTO);
+    }
 
-        // Map PaymentDTO to Payment entity
-        Payment payment = modelMapper.map(paymentDTO, Payment.class);
-        payment.setPaymentId(paymentId); // Ensure the ID is preserved
-        payment.setBooking(booking); // Set the booking
+    @Override
+    public ResponseDTO updatePayment(int paymentId, PaymentDTO paymentDTO) {
+        return null;
+    }
 
-        paymentRepository.save(payment);
+    @Override
+    public ResponseDTO updatePaymentDetails(int paymentId, Double finalAmount, String status, LocalDateTime paymentDate) {
+        Payment existingPayment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment not found with id: " + paymentId));
+
+        // Only update fields that were provided (not null)
+        if (finalAmount != null) {
+            existingPayment.setFinalAmount(finalAmount);
+        }
+        if (status != null) {
+            existingPayment.setStatus(status);
+        }
+        if (paymentDate != null) {
+            existingPayment.setPaymentDate(paymentDate);
+        }
+
+        Payment updatedPayment = paymentRepository.save(existingPayment);
+        PaymentDTO paymentDTO = modelMapper.map(updatedPayment, PaymentDTO.class);
+
         return new ResponseDTO(200, "Payment updated successfully", paymentDTO);
     }
+
 
     @Override
     public ResponseDTO deletePayment(int paymentId) {

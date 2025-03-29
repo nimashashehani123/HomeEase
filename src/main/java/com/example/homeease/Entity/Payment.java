@@ -25,12 +25,6 @@ public class Payment {
     @Column
     private double finalAmount; // Final amount
 
-    @Column(name = "deposit_transaction_id", nullable = false, unique = true)
-    private String depositTransactionId; // Unique transaction ID for deposit
-
-    @Column(name = "final_transaction_id", unique = true)
-    private String finalTransactionId; // Unique transaction ID for final payment
-
     @Column(nullable = false)
     private String status; // Payment status (e.g., Pending, Completed, Failed, Refunded)
 

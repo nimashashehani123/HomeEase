@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -36,65 +37,37 @@ public class BookingController {
     }
 
 
-    @GetMapping("/customer/{customerId}")
-    public ResponseEntity<ResponseDTO> getCustomerBookings(
-            @PathVariable Integer customerId,
+    @GetMapping("/customer/{id}")
+    @PreAuthorize("hasAuthority('CUSTOMER')") // Only customers can access this
+    public ResponseEntity<?> getBookingsForCustomer(
+            @PathVariable int id,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
-
         try {
-            ResponseDTO responseDTO = bookingService.getBookingsByCustomer(
-                    customerId,
-                    status,
-                    fromDate,
-                    toDate
-            );
-
-            return ResponseEntity.ok(
-                    new ResponseDTO(
-                            VarList.OK,
-                            "Bookings retrieved successfully",
-                            responseDTO
-                    )
-            );
-        } catch (ResourceNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ResponseDTO(VarList.Not_Found, ex.getMessage(), null));
+            ResponseDTO responseDTO = bookingService.getBookingsForCustomer(id, status, fromDate, toDate);
+            return ResponseEntity.ok(new ResponseDTO(VarList.OK, "Success", responseDTO));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error, "Error: " + e.getMessage(), null));
         }
     }
 
-    @GetMapping("/provider/{providerId}")
-    public ResponseEntity<ResponseDTO> getProviderBookings(
-            @PathVariable Integer providerId,
+    @GetMapping("/provider/{id}")
+    @PreAuthorize("hasAuthority('SERVICE_PROVIDER')") // Only providers can access this
+    public ResponseEntity<?> getBookingsForProvider(
+            @PathVariable int id,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
-
         try {
-            ResponseDTO responseDTO = bookingService.getBookingsByServiceProvider(
-                    providerId,
-                    status,
-                    fromDate,
-                    toDate
-            );
-
-            return ResponseEntity.ok(
-                    new ResponseDTO(
-                            VarList.OK,
-                            "Bookings retrieved successfully",
-                            responseDTO
-                    )
-            );
-        } catch (ResourceNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ResponseDTO(VarList.Not_Found, ex.getMessage(), null));
+            ResponseDTO responseDTO = bookingService.getBookingsForProvider(id, status, fromDate, toDate);
+            return ResponseEntity.ok(new ResponseDTO(VarList.OK, "Success", responseDTO));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error, "Error: " + e.getMessage(), null));
         }
     }
-
-
-
-
 
 
 
@@ -110,7 +83,7 @@ public class BookingController {
         }
     }
 
-    @GetMapping("/customer/{customerId}")
+   /* @GetMapping("/customer/{customerId}")
     @PreAuthorize("hasAnyAuthority('CUSTOMER', 'ADMIN')")
     public ResponseEntity<ResponseDTO> getBookingsByCustomer(@PathVariable int customerId) {
         try {
@@ -121,7 +94,7 @@ public class BookingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseDTO(VarList.Internal_Server_Error, e.getMessage(), null));
         }
-    }
+    }*/
 
     @GetMapping("/service/{serviceId}")
     public ResponseEntity<ResponseDTO> getBookingsByService(@PathVariable int serviceId) {
@@ -135,7 +108,7 @@ public class BookingController {
         }
     }
 
-    @GetMapping("/provider/{providerId}")
+  /*  @GetMapping("/provider/{providerId}")
     @PreAuthorize("hasAuthority('SERVICE_PROVIDER')")
     public ResponseEntity<ResponseDTO> getBookingsByProvider(@PathVariable int providerId) {
         try {
@@ -146,7 +119,7 @@ public class BookingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseDTO(VarList.Internal_Server_Error, e.getMessage(), null));
         }
-    }
+    }*/
 
     @PatchMapping("/{bookingId}/status")
     @PreAuthorize("hasAuthority('SERVICE_PROVIDER')")
@@ -163,13 +136,14 @@ public class BookingController {
         }
     }
 
-    @PatchMapping("/{bookingId}/hours")
+    @PatchMapping("/{bookingId}/status/duration")
     @PreAuthorize("hasAuthority('SERVICE_PROVIDER')")
     public ResponseEntity<ResponseDTO> updateHoursWorked(
             @PathVariable int bookingId,
-            @RequestParam double hours) {
+            @RequestParam String status,
+            @RequestParam double duration) {
         try {
-            ResponseDTO response = bookingService.updateHoursWorked(bookingId, hours);
+            ResponseDTO response = bookingService.updateHoursWorked(bookingId, duration,status);
             return ResponseEntity.status(HttpStatus.valueOf(response.getCode()))
                     .body(response);
         } catch (Exception e) {

@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -27,35 +28,30 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     List<Booking> findByStatusIn(List<String> pending);
 
 
-    // Get bookings for a specific service provider with optional filters
-    @Query(value = """
-    SELECT b FROM Booking b
-    WHERE b.service.serviceProvider.userId = :userId
-    AND (:status IS NULL OR b.status = :status)
-    AND (:fromDate IS NULL OR b.bookingDateTime >= :fromDate)
-    AND (:toDate IS NULL OR b.bookingDateTime <= :toDate)
-    ORDER BY b.bookingDateTime DESC
-    """)
-    List<Booking> findProviderBookings(
-            @Param("userId") int userId,
-            @Param("status") String status,
-            @Param("fromDate") LocalDate fromDate,
-            @Param("toDate") LocalDate toDate
-    );
-    @Query(value = """
-    SELECT b FROM Booking b
-    JOIN User u ON b.customer.userId = u.userId
-    WHERE u.userId = :customerId
-    AND (:status IS NULL OR b.status = :status)
-    AND (:fromDate IS NULL OR b.bookingDateTime >= :fromDate)
-    AND (:toDate IS NULL OR b.bookingDateTime <= :toDate)
-    ORDER BY b.bookingDateTime DESC
-    """)
-    List<Booking> findBookingsByCustomer(
+    // For Customers: Only fetch bookings where they are the customer
+    @Query("SELECT b FROM Booking b WHERE " +
+            "b.customer.userId = :customerId AND " +
+            "(:status IS NULL OR b.status = :status) AND " +
+            "(:fromDate IS NULL OR CAST(b.bookingDateTime AS date) >= :fromDate) AND " +
+            "(:toDate IS NULL OR CAST(b.bookingDateTime AS date) <= :toDate) " +
+            "ORDER BY b.bookingDateTime DESC")
+    List<Booking> findByCustomerIdAndFilters(
             @Param("customerId") int customerId,
             @Param("status") String status,
             @Param("fromDate") LocalDate fromDate,
-            @Param("toDate") LocalDate toDate
-    );
+            @Param("toDate") LocalDate toDate);
+
+    // For Providers: Only fetch bookings where they are the service provider
+    @Query("SELECT b FROM Booking b WHERE " +
+            "b.service.serviceProvider.userId = :providerId AND " +
+            "(:status IS NULL OR b.status = :status) AND " +
+            "(:fromDate IS NULL OR CAST(b.bookingDateTime AS date) >= :fromDate) AND " +
+            "(:toDate IS NULL OR CAST(b.bookingDateTime AS date) <= :toDate) " +
+            "ORDER BY b.bookingDateTime DESC")
+    List<Booking> findByProviderIdAndFilters(
+            @Param("providerId") int providerId,
+            @Param("status") String status,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate);
 
 }

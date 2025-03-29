@@ -3,10 +3,18 @@ package com.example.homeease.Controller;
 import com.example.homeease.Dto.ResponseDTO;
 import com.example.homeease.Dto.PaymentDTO;
 import com.example.homeease.Service.PaymentService;
+import com.example.homeease.Utill.VarList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/payments")
@@ -15,10 +23,12 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    @PostMapping
+    @PostMapping("/add")
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity<ResponseDTO> createPayment(@RequestBody PaymentDTO paymentDTO) {
-        ResponseDTO response = paymentService.createPayment(paymentDTO);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
+        ResponseDTO responseDTO = paymentService.createPayment(paymentDTO);
+        return ResponseEntity.ok()
+                .body(new ResponseDTO(VarList.OK, "Success", responseDTO));
     }
 
     @GetMapping
@@ -32,11 +42,67 @@ public class PaymentController {
         ResponseDTO response = paymentService.getPaymentById(paymentId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
+    @GetMapping("get-by-booking/{bookingId}")
+    public ResponseEntity<ResponseDTO> getPaymentByBookingId(@PathVariable int bookingId) {
+        System.out.println("-----------------------------------------");
+        try {
+        ResponseDTO responseDTO = paymentService.getPaymentByBookingId(bookingId);
+            return ResponseEntity.ok()
+                    .body(new ResponseDTO(VarList.OK, "Success", responseDTO));
+        }catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "Error: " + e.getMessage(), null));
+        }
+    }
 
     @PutMapping("/{paymentId}")
     public ResponseEntity<ResponseDTO> updatePayment(@PathVariable int paymentId, @RequestBody PaymentDTO paymentDTO) {
-        ResponseDTO response = paymentService.updatePayment(paymentId, paymentDTO);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
+        ResponseDTO responseDTO = paymentService.updatePayment(paymentId, paymentDTO);
+        return ResponseEntity.ok()
+                .body(new ResponseDTO(VarList.OK, "Success", responseDTO));
+    }
+
+    @PatchMapping("/{paymentId}")
+    public ResponseEntity<ResponseDTO> updatePayment(
+            @PathVariable int paymentId,
+            @RequestBody Map<String, Object> updates) {
+
+        try {
+            // Manually parse the fields from the map
+            Double finalAmount = updates.containsKey("finalAmount") ?
+                    Double.valueOf(updates.get("finalAmount").toString()) : null;
+            String status = updates.containsKey("status") ?
+                    updates.get("status").toString() : null;
+
+            // Handle date parsing manually
+            LocalDateTime paymentDate = null;
+            if (updates.containsKey("paymentDate")) {
+                String dateStr = updates.get("paymentDate").toString();
+                paymentDate = LocalDateTime.parse(dateStr, DateTimeFormatter.ISO_DATE_TIME);
+            }
+
+            // Create a PaymentDTO with the parsed values
+            PaymentDTO paymentDTO = new PaymentDTO();
+            paymentDTO.setFinalAmount(finalAmount);
+            paymentDTO.setStatus(status);
+            paymentDTO.setPaymentDate(paymentDate);
+
+            ResponseDTO responseDTO = paymentService.updatePaymentDetails(
+                    paymentId,
+                    paymentDTO.getFinalAmount(),
+                    paymentDTO.getStatus(),
+                    paymentDTO.getPaymentDate());
+
+            return ResponseEntity.ok()
+                    .body(new ResponseDTO(VarList.OK, "Payment updated successfully", responseDTO.getData()));
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseDTO(VarList.Bad_Request, "Invalid date format. Use ISO-8601 format (e.g., 2023-05-15T12:34:56.789Z)", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(VarList.Internal_Server_Error, e.getMessage(), null));
+        }
     }
 
     @DeleteMapping("/{paymentId}")

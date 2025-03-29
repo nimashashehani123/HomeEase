@@ -3,6 +3,7 @@ package com.example.homeease.Service.Impl;
 import com.example.homeease.Advisor.ResourceNotFoundException;
 import com.example.homeease.Dto.BookingDTO;
 import com.example.homeease.Dto.ResponseDTO;
+import com.example.homeease.Dto.ServiceDTO;
 import com.example.homeease.Entity.Booking;
 import com.example.homeease.Entity.Service;
 import com.example.homeease.Entity.User;
@@ -17,6 +18,10 @@ import org.modelmapper.ModelMapper;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -154,12 +159,13 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public ResponseDTO updateHoursWorked(int bookingId, double hours) {
+    public ResponseDTO updateHoursWorked(int bookingId, double hours,String status) {
         try {
             Booking booking = bookingRepository.findById(bookingId)
                     .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
             booking.setHoursWorked(hours);
+            booking.setStatus(status);
             Booking updatedBooking = bookingRepository.save(booking);
 
             BookingDTO responseDTO = modelMapper.map(updatedBooking, BookingDTO.class);
@@ -213,74 +219,34 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
-    public ResponseDTO getBookingsByCustomer(
-            int customerId,
-            String status,
-            LocalDate fromDate,
-            LocalDate toDate) {
-
-        try {
-            // Validate customer exists
-            if (!userRepository.existsById(customerId)) {
-                throw new ResourceNotFoundException("Customer not found with ID: " + customerId);
-            }
-
-            List<Booking> bookings = bookingRepository.findBookingsByCustomer(
-                    customerId,
-                    status,
-                    fromDate,
-                    toDate
-            );
-
-            return createResponseFromBookings(bookings);
-
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseDTO(VarList.Not_Found, ex.getMessage(), null);
-        } catch (Exception ex) {
-            return new ResponseDTO(VarList.Internal_Server_Error,
-                    "Error retrieving customer bookings: " + ex.getMessage(), null);
-        }
+    public ResponseDTO getBookingsForCustomer(int customerId, String status, LocalDate fromDate, LocalDate toDate) {
+        List<Booking> bookings = bookingRepository.findByCustomerIdAndFilters(
+                customerId, status, fromDate, toDate);
+        return mapBookingsToDTO(bookings);
     }
 
     @Override
-    public ResponseDTO getBookingsByServiceProvider(
-            int providerId,
-            String status,
-            LocalDate fromDate,
-            LocalDate toDate) {
-
-        try {
-            // Validate provider exists
-            if (!userRepository.existsById(providerId)) {
-                throw new ResourceNotFoundException("Service provider not found with ID: " + providerId);
-            }
-
-            List<Booking> bookings = bookingRepository.findProviderBookings(
-                    providerId,
-                    status,
-                    fromDate,
-                    toDate
-            );
-
-            return createResponseFromBookings(bookings);
-
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseDTO(VarList.Not_Found, ex.getMessage(), null);
-        } catch (Exception ex) {
-            return new ResponseDTO(VarList.Internal_Server_Error,
-                    "Error retrieving provider bookings: " + ex.getMessage(), null);
-        }
+    public ResponseDTO getBookingsForProvider(int providerId, String status, LocalDate fromDate, LocalDate toDate) {
+        List<Booking> bookings = bookingRepository.findByProviderIdAndFilters(
+                providerId, status, fromDate, toDate);
+        return mapBookingsToDTO(bookings);
     }
 
-    private ResponseDTO createResponseFromBookings(List<Booking> bookings) {
-        if (bookings.isEmpty()) {
-            return new ResponseDTO(VarList.OK, "No bookings found", Collections.emptyList());
-        }
-
-        List<BookingDTO> bookingDTOs = bookings.stream()
-                .map(booking -> modelMapper.map(booking, BookingDTO.class))
+    private ResponseDTO mapBookingsToDTO(List<Booking> bookings) {
+        List<BookingDTO> dtos = bookings.stream()
+                .map(booking -> {
+                    BookingDTO dto = new BookingDTO();
+                    dto.setBookingId(booking.getBookingId());
+                    dto.setCustomerId(booking.getCustomer().getUserId());
+                    dto.setServiceId(booking.getService().getServiceId());
+                    dto.setBookingDateTime(booking.getBookingDateTime());
+                    dto.setStatus(booking.getStatus());
+                    dto.setHoursWorked(booking.getHoursWorked());
+                    dto.setCreateAt(booking.getCreatedAt());
+                    return dto;
+                })
                 .collect(Collectors.toList());
-
-        return new ResponseDTO(VarList.OK, "Bookings retrieved successfully", bookingDTOs);
+        return new ResponseDTO(200, "Success", dtos);
     }
+
 }
