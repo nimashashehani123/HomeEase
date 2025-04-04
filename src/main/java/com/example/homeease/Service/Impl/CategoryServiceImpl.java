@@ -3,8 +3,10 @@ package com.example.homeease.Service.Impl;
 import com.example.homeease.Advisor.ResourceNotFoundException;
 import com.example.homeease.Dto.ResponseDTO;
 import com.example.homeease.Dto.CategoryDTO;
+import com.example.homeease.Dto.ServiceDTO;
 import com.example.homeease.Entity.Category;
 import com.example.homeease.Repo.CategoryRepository;
+import com.example.homeease.Repo.ServiceRepository;
 import com.example.homeease.Service.CategoryService;
 import com.example.homeease.Utill.VarList;
 import jakarta.transaction.Transactional;
@@ -15,12 +17,16 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private final ServiceRepository serviceRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -30,6 +36,18 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Value("${app.upload-dir}")
     private String uploadDir;
+
+
+    public CategoryServiceImpl(ServiceRepository serviceRepository,
+                               CategoryRepository categoryRepository) {
+        this.serviceRepository = serviceRepository;
+        this.categoryRepository = categoryRepository;
+    }
+
+    @Override
+    public boolean hasAssociatedServices(int categoryId) {
+        return serviceRepository.existsByCategoryCategoryId(categoryId);
+    }
 
     @Override
     @Transactional
@@ -134,16 +152,32 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ResponseDTO updateCategory(int categoryId, CategoryDTO categoryDTO) {
-        if (!categoryRepository.existsById(categoryId)) {
-            return new ResponseDTO(404, "Category not found with id: " + categoryId, null);
-        }
-        Category category = modelMapper.map(categoryDTO, Category.class);
-        category.setCategoryId(categoryId); // Ensure the ID is preserved
-        categoryRepository.save(category);
-        return new ResponseDTO(200, "Category updated successfully", categoryDTO);
-    }
+    public int updateCategory(CategoryDTO categoryDTO) {
+        try {
+            // Find existing category
+            Category existingCategory = categoryRepository.findById(categoryDTO.getCategoryId())
+                    .orElse(null);
 
+            if (existingCategory == null) {
+                return VarList.Not_Found;
+            }
+
+            // Update fields
+            existingCategory.setCategoryName(categoryDTO.getCategoryName());
+
+            // Update image path if provided
+            if (categoryDTO.getImage() != null && !categoryDTO.getImage().isEmpty()) {
+                existingCategory.setImage(categoryDTO.getImage());
+            }
+
+            categoryRepository.save(existingCategory);
+            return VarList.Updated;
+
+        } catch (Exception e) {
+            System.err.println("Category update error: " + e.getMessage());
+            return VarList.Internal_Server_Error;
+        }
+    }
     @Override
     public ResponseDTO deleteCategory(int categoryId) {
         if (!categoryRepository.existsById(categoryId)) {
@@ -152,4 +186,6 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.deleteById(categoryId);
         return new ResponseDTO(200, "Category deleted successfully", null);
     }
+
+
 }

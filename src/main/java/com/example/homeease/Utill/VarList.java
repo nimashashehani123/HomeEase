@@ -7,6 +7,7 @@ public class VarList {
     public static final int OK = 200;
     public static final int Created = 201;
     public static final int Accepted = 202;
+    public static final int Updated = 200;
     public static final int Non_Authoritative_Information = 203;
     public static final int No_Content = 204;
     public static final int Reset_Content = 205;

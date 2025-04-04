@@ -59,6 +59,73 @@ body {
     color: white;
 }
 
+
+/* Login Button */
+.logout-btn {
+    background-color: white; /* Yellow accent */
+    color: #000; /* Dark text for contrast */
+    padding: 0.5rem 1.5rem;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: #666666; /* Brighter yellow for hover */
+    color: white;
+}
+
+.hamburger {
+    display: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navbar .logo {
+        font-size: 1rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: #000;
+    }
+    .login-btn {
+        background-color: white; /* Yellow accent */
+        color: #000; /* Dark text for contrast */
+        padding: 0.5rem 1.5rem;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar .logo {
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: #000;
+    }
+
+    .login-btn {
+        background-color: white; /* Yellow accent */
+        color: #000; /* Dark text for contrast */
+        padding: 0.5rem 1.5rem;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 0.6rem;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+}
+
+
 /* Role Toggle */
 .role-toggle {
     display: flex;
@@ -642,34 +709,37 @@ input:checked + .slider:before {
     background: linear-gradient(45deg, #e3c10e, #FFD700);
     transform: scale(1.05);
 }.edit-btn {
-    background: linear-gradient(45deg, #FFD700, #e3c10e);
-    color: black;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 20px;
+     background: black;
+     color: white;
+     cursor: pointer;
+     border: black 2px solid;
+     border-radius: 3px;
+     padding: 2px 5px;
     font-weight: bold;
-    cursor: pointer;
     transition: all 0.3s ease;
+
+
 }
 
 .edit-btn:hover {
-    background: linear-gradient(45deg, #e3c10e, #FFD700);
+    background: rgba(0, 0, 0, 0.7);
     transform: scale(1.05);
 }
 
 .delete-btn {
-    background: linear-gradient(45deg, orangered, red);
+    background: black;
     color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-weight: bold;
     cursor: pointer;
+    border: black 2px solid;
+    border-radius: 3px;
+    padding: 2px 5px;
+    font-weight: bold;
     transition: all 0.3s ease;
+
 }
 
 .delete-btn:hover {
-    background: linear-gradient(45deg, darkred, orangered);
+    background: rgba(0, 0, 0, 0.7);
     transform: scale(1.05);
 }
 /* Footer */
@@ -744,6 +814,7 @@ input:checked + .slider:before {
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
     margin: 10px 0;
+
 }
 
 .add-btn:hover {
@@ -772,4 +843,153 @@ input:checked + .slider:before {
 /* Adjust service section to have position relative */
 .service-section {
     position: relative;
+}
+
+.edit-form {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.edit-form input,
+.edit-form textarea {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+}
+.edit-form {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.form-actions button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-actions button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.form-actions .cancel-edit {
+    background-color: #f44336;
+    color: white;
+}
+
+.admin-controls {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: flex;
+    gap: 5px;
+}
+
+.admin-controls button {
+    background: black;
+    color: white;
+    cursor: pointer;
+    border: black 2px solid;
+    border-radius: 3px;
+    padding: 2px 5px;
+}
+
+.admin-controls button:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.save-btn, .cancel-btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.save-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+}
+
+.cancel-btn {
+    background: #f0f0f0;
+    border: 1px solid #ddd;
 }

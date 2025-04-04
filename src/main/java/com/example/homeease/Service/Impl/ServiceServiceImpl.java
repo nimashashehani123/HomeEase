@@ -7,6 +7,7 @@ import com.example.homeease.Dto.ServiceDTO;
 import com.example.homeease.Entity.Category;
 import com.example.homeease.Entity.Service;
 import com.example.homeease.Entity.User;
+import com.example.homeease.Repo.BookingRepository;
 import com.example.homeease.Repo.CategoryRepository;
 import com.example.homeease.Repo.ServiceRepository;
 import com.example.homeease.Repo.UserRepository;
@@ -32,6 +33,20 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private final BookingRepository bookingRepository;
+
+    public ServiceServiceImpl(BookingRepository bookingRepository,
+                              ServiceRepository serviceRepository) {
+        this.bookingRepository = bookingRepository;
+        this.serviceRepository = serviceRepository;
+    }
+
+    @Override
+    public boolean hasAssociatedBookings(int serviceId) {
+        return bookingRepository.existsByServiceServiceId(serviceId);
+    }
 
     @Override
     public int addService(ServiceDTO serviceDTO) {
@@ -124,16 +139,42 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public ResponseDTO updateService(int serviceId, ServiceDTO serviceDTO) {
-        if (!serviceRepository.existsById(serviceId)) {
-            return new ResponseDTO(404, "Service not found with id: " + serviceId, null);
-        }
-        Service service = modelMapper.map(serviceDTO, Service.class);
-        service.setServiceId(serviceId); // Ensure the ID is preserved
-        serviceRepository.save(service);
-        return new ResponseDTO(200, "Service updated successfully", serviceDTO);
-    }
+    public int updateService(ServiceDTO serviceDTO) {
+        try {
+            // Find existing service
+            Service existingService = serviceRepository.findById(serviceDTO.getServiceId())
+                    .orElse(null);
 
+            if (existingService == null) {
+                return VarList.Not_Found;
+            }
+
+            // Update fields
+            existingService.setServiceName(serviceDTO.getServiceName());
+            existingService.setDescription(serviceDTO.getDescription());
+            existingService.setFixedPrice(serviceDTO.getFixedPrice());
+            existingService.setHourlyRate(serviceDTO.getHourlyRate());
+
+            // Update image path if provided
+            if (serviceDTO.getImage() != null) {
+                existingService.setImage(serviceDTO.getImage());
+            }
+
+            // Update category if changed
+            if (existingService.getCategory().getCategoryId() != serviceDTO.getCategoryId()) {
+                Category category = categoryRepository.findById(serviceDTO.getCategoryId())
+                        .orElseThrow(() -> new RuntimeException("Category not found"));
+                existingService.setCategory(category);
+            }
+
+            serviceRepository.save(existingService);
+            return VarList.Updated;
+
+        } catch (Exception e) {
+            System.err.println("Update error: " + e.getMessage());
+            return VarList.Internal_Server_Error;
+        }
+    }
     @Override
     public ResponseDTO deleteService(int serviceId) {
         if (!serviceRepository.existsById(serviceId)) {

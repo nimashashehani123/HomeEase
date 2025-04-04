@@ -43,6 +43,17 @@ async function getUserIdFromEmail(userEmail) {
     });
 }
 let userRole;
+
+function navigateHome() {
+        if (userRole === 'CUSTOMER') {
+            window.location.href = '../view/index.html';
+        } else if (userRole === 'SERVICE_PROVIDER') {
+            window.location.href = '../view/providerdashboard.html';
+        } else {
+            // Default fallback if role isn't recognized
+            window.location.href = 'index.html';
+        }
+}
 async function loadBookings() {
     showLoadingState();
 

@@ -8,8 +8,8 @@ public interface CategoryService {
     ResponseDTO getAllCategories();
     ResponseDTO getAllCategoryIds();
     ResponseDTO getCategoryIdByName(String categoryName);
-
+    boolean hasAssociatedServices(int categoryId);
     ResponseDTO getCategoryById(int categoryId);
-    ResponseDTO updateCategory(int categoryId, CategoryDTO categoryDTO);
+    int updateCategory(CategoryDTO categoryDTO);
     ResponseDTO deleteCategory(int categoryId);
 }

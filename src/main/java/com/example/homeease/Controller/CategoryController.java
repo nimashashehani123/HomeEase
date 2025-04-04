@@ -127,10 +127,66 @@ try {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
-    @PutMapping("/{categoryId}")
-    public ResponseEntity<ResponseDTO> updateCategory(@PathVariable int categoryId, @RequestBody CategoryDTO categoryDTO) {
-        ResponseDTO response = categoryService.updateCategory(categoryId, categoryDTO);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
+    @GetMapping("/{categoryId}/has-services")
+    public ResponseEntity<Boolean> hasAssociatedServices(@PathVariable int categoryId) {
+        boolean hasServices = categoryService.hasAssociatedServices(categoryId);
+        return ResponseEntity.ok(hasServices);
+    }
+
+    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseDTO> updateCategory(
+            @RequestPart("categoryDTO") CategoryDTO categoryDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        try {
+            String uploadDir = "FrontEnd/view/uploads/";
+
+            // Handle image update
+            if (file != null && !file.isEmpty()) {
+                // Generate new filename
+                String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+
+                // Ensure directory exists
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                // Save new file
+                Path path = Paths.get(uploadDir + filename);
+                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+                // Delete old image if exists
+                if (categoryDTO.getImage() != null && !categoryDTO.getImage().isEmpty()) {
+                    Path oldImagePath = Paths.get(uploadDir + categoryDTO.getImage());
+                    Files.deleteIfExists(oldImagePath);
+                }
+
+                categoryDTO.setImage(filename);
+            }
+
+            // Update category
+            int result = categoryService.updateCategory(categoryDTO);
+
+            if (result == VarList.Updated) {
+                return ResponseEntity.ok()
+                        .body(new ResponseDTO(VarList.Updated, "Category updated", categoryDTO));
+            } else if (result == VarList.Not_Found) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseDTO(VarList.Not_Found, "Category not found", null));
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new ResponseDTO(result, "Update failed", null));
+            }
+
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "File error: " + e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "Error: " + e.getMessage(), null));
+        }
     }
 
     @DeleteMapping("/{categoryId}")

@@ -40,8 +40,11 @@ window.addEventListener('click', (event) => {
 
 // Form Submission
 function login() {
+    console.log("-----------------------------------------")
     const email = document.getElementById('providerEmail').value;
     const password = document.getElementById('providerPassword').value;
+    console.log(email)
+    console.log(password)
 
     $.ajax({
         url: 'http://localhost:8080/api/v1/auth/authenticate',
@@ -72,6 +75,7 @@ function login() {
                     // Perform actions based on the role
                     if (role === "SERVICE_PROVIDER") {
                         console.log("User is a Service Provider");
+                        window.location.href = "../view/providerdashboard.html";
                         closeModal.addEventListener('click', () => {
                             providerLoginModal.style.display = 'none';
                             roleToggle.checked = false; // Reset the toggle

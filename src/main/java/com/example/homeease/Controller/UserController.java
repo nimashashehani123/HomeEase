@@ -37,12 +37,12 @@ public class UserController {
             int res = userService.addUser(userDTO);
             switch (res) {
                 case VarList.Created -> {
-                    String token = jwtUtil.generateToken(userDTO);
+                  /*  String token = jwtUtil.generateToken(userDTO);
                     AuthDTO authDTO = new AuthDTO();
                     authDTO.setEmail(userDTO.getEmail());
-                    authDTO.setToken(token);
+                    authDTO.setToken(token);*/
                     return ResponseEntity.status(HttpStatus.CREATED)
-                            .body(new ResponseDTO(VarList.Created, "Success", authDTO));
+                            .body(new ResponseDTO(VarList.Created, "Success", userDTO));
                 }
                 case VarList.Not_Acceptable -> {
                     return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)

@@ -5,6 +5,8 @@ import com.example.homeease.Dto.ResponseDTO;
 import com.example.homeease.Dto.ServiceDTO;
 import com.example.homeease.Service.ServiceService;
 import com.example.homeease.Utill.VarList;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -104,10 +107,67 @@ public class ServiceController {
         }
     }
 
-    @PutMapping("/{serviceId}")
-    public ResponseEntity<ResponseDTO> updateService(@PathVariable int serviceId, @RequestBody ServiceDTO serviceDTO) {
-        ResponseDTO response = serviceService.updateService(serviceId, serviceDTO);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
+    @GetMapping("/{serviceId}/has-bookings")
+    public ResponseEntity<Boolean> hasAssociatedBookings(@PathVariable int serviceId) {
+        boolean hasBookings = serviceService.hasAssociatedBookings(serviceId);
+        return ResponseEntity.ok(hasBookings);
+    }
+
+
+    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseDTO> updateService(
+            @RequestPart("serviceDTO") ServiceDTO serviceDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        try {
+            String uploadDir = "FrontEnd/view/uploads/";
+
+            // Handle image update
+            if (file != null && !file.isEmpty()) {
+                // Generate new filename
+                String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+
+                // Ensure directory exists
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                // Save new file
+                Path path = Paths.get(uploadDir + filename);
+                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+                // Delete old image if exists
+                if (serviceDTO.getImage() != null) {
+                    Path oldImagePath = Paths.get(uploadDir + serviceDTO.getImage());
+                    Files.deleteIfExists(oldImagePath);
+                }
+
+                serviceDTO.setImage(filename);
+            }
+
+            // Update service
+            int result = serviceService.updateService(serviceDTO);
+
+            if (result == VarList.Updated) {
+                return ResponseEntity.ok()
+                        .body(new ResponseDTO(VarList.Updated, "Service updated", serviceDTO));
+            } else if (result == VarList.Not_Found) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseDTO(VarList.Not_Found, "Service not found", null));
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new ResponseDTO(result, "Update failed", null));
+            }
+
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "File error: " + e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "Error: " + e.getMessage(), null));
+        }
     }
 
     @DeleteMapping("/{serviceId}")

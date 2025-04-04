@@ -41,6 +41,7 @@ function login() {
                     // Perform actions based on the role
                     if (role === "SERVICE_PROVIDER") {
                         console.log("User is a Service Provider");
+                        window.location.href = "../view/providerdashboard.html";
                         // Redirect or show provider-specific content
                     } else if (role === "CUSTOMER") {
                         console.log("User is a Customer");
