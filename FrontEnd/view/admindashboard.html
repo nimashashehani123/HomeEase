@@ -4,289 +4,101 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - HomeEase</title>
+  <link rel="stylesheet" href="../css/admindashboard.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <style>
-    /* General Styles */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(10deg, #FFD700,#e3c10e);
-      color: #333;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .header h1 {
-      font-size: 24px;
-      margin: 0;
-    }
-
-    .header .logout-btn {
-      background-color: #ff4d4d;
-      color: #fff;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    .header .logout-btn:hover {
-      background-color: #cc0000;
-    }
-
-    /* Dashboard */
-    .dashboard {
-      padding: 20px;
-    }
-
-    .dashboard h1 {
-      font-size: 28px;
-      margin-bottom: 20px;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      text-align: center;
-    }
-
-    .card i {
-      font-size: 40px;
-      color: #007bff;
-      margin-bottom: 15px;
-    }
-
-    .card h3 {
-      font-size: 22px;
-      margin-bottom: 10px;
-    }
-
-    .card p {
-      font-size: 16px;
-      color: #555;
-    }
-
-    /* Service Provider Verification */
-    .verification-section {
-      margin-top: 40px;
-    }
-
-    .verification-section h2 {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-
-    .verification-section table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .verification-section th, .verification-section td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .verification-section th {
-      background-color: #f8f9fa;
-      font-weight: bold;
-    }
-
-    .verification-section .verify-btn {
-      padding: 6px 12px;
-      background-color: #28a745;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .verification-section .verify-btn:hover {
-      background-color: #218838;
-    }
-
-    /* Payments Section */
-    .payments-section {
-      margin-top: 40px;
-    }
-
-    .payments-section h2 {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-
-    .payments-section table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .payments-section th, .payments-section td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .payments-section th {
-      background-color: #f8f9fa;
-      font-weight: bold;
-    }
-  </style>
 </head>
 <body>
-<!-- Header -->
-<div class="header">
-  <h1>Welcome, Admin!</h1>
-  <button class="logout-btn" onclick="logout()">
-    <i class="fas fa-sign-out-alt"></i> Logout
-  </button>
-</div>
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="container">
+    <a href="#" class="logo">HomeEase [Admin]</a>
+    <ul class="nav-links">
+      <li><a href="#home" style="color: white">Home</a></li>
+      <li><a href="../view/users.html">Users</a></li>
+      <li><a href="../view/providers.html">Providers</a></li>
+      <li><a href="../view/services.html">Services</a></li>
+    </ul>
+    <a href="#profile" class="logout-btn">
+      <i class="fas fa-user-cog"></i> Admin <!-- Admin icon and text -->
+    </a>
+    <div class="hamburger" id="hamburger">
+      <i class="fas fa-bars"></i>
+    </div>
+  </div>
+</nav>
 
-<!-- Dashboard -->
-<div class="dashboard">
-  <h1>Dashboard</h1>
-  <div class="cards">
-    <!-- Card 1: Total Users -->
-    <div class="card">
+<!-- Welcome Section -->
+<section class="welcome-section">
+  <h1>Welcome, Administrator!</h1>
+  <p>Manage the platform, monitor activities, and ensure smooth operations.</p>
+</section>
+
+<!-- Stats Overview Section -->
+<section class="stats-section">
+  <h2>Platform Overview</h2>
+  <div class="stats-grid">
+    <!-- Stat Card 1 -->
+    <div class="stat-card">
       <i class="fas fa-users"></i>
       <h3>Total Users</h3>
-      <p id="total-users">0</p>
+      <p class="stat-number">1,245</p>
+      <p class="stat-change"><i class="fas fa-arrow-up"></i> 12% this month</p>
     </div>
-    <!-- Card 2: Total Payments -->
-    <div class="card">
+    <!-- Stat Card 2 -->
+    <div class="stat-card">
+      <i class="fas fa-tools"></i>
+      <h3>Service Providers</h3>
+      <p class="stat-number">328</p>
+      <p class="stat-change"><i class="fas fa-arrow-up"></i> 8% this month</p>
+    </div>
+    <!-- Stat Card 3 -->
+    <div class="stat-card">
+      <i class="fas fa-calendar-check"></i>
+      <h3>Bookings</h3>
+      <p class="stat-number">567</p>
+      <p class="stat-change"><i class="fas fa-arrow-up"></i> 15% this month</p>
+    </div>
+    <!-- Stat Card 4 -->
+    <div class="stat-card">
       <i class="fas fa-dollar-sign"></i>
-      <h3>Total Payments</h3>
-      <p id="total-payments">0</p>
-    </div>
-    <!-- Card 3: Pending Verifications -->
-    <div class="card">
-      <i class="fas fa-check-circle"></i>
-      <h3>Pending Verifications</h3>
-      <p id="pending-verifications">0</p>
+      <h3>Revenue</h3>
+      <p class="stat-number">$24,890</p>
+      <p class="stat-change"><i class="fas fa-arrow-up"></i> 22% this month</p>
     </div>
   </div>
+</section>
 
-  <!-- Service Provider Verification Section -->
-  <div class="verification-section">
-    <h2>Service Provider Verifications</h2>
-    <table id="verification-table">
-      <thead>
-      <tr>
-        <th>User ID</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Action</th>
-      </tr>
-      </thead>
-      <tbody>
-      <!-- Rows will be populated dynamically -->
-      </tbody>
-    </table>
+
+<!-- Quick Actions Section -->
+<section class="actions-section">
+  <h2>Quick Actions</h2>
+  <div class="actions-grid">
+    <button class="action-btn">
+      <i class="fas fa-user-plus"></i> Add New User
+    </button>
+    <button class="action-btn">
+      <i class="fas fa-tools"></i> Verify Provider
+    </button>
+    <button class="action-btn">
+      <i class="fas fa-file-invoice-dollar"></i> Generate Report
+    </button>
+    <button class="action-btn">
+      <i class="fas fa-cog"></i> System Settings
+    </button>
   </div>
+</section>
 
-  <!-- Payments Section -->
-  <div class="payments-section">
-    <h2>All Payments</h2>
-    <table id="payments-table">
-      <thead>
-      <tr>
-        <th>Payment ID</th>
-        <th>User ID</th>
-        <th>Amount</th>
-        <th>Status</th>
-        <th>Timestamp</th>
-      </tr>
-      </thead>
-      <tbody>
-      <!-- Rows will be populated dynamically -->
-      </tbody>
-    </table>
+<!-- Footer -->
+<footer class="footer">
+  <p>&copy; 2023 HomeEase Admin. All rights reserved.</p>
+  <div class="social-links">
+    <a href="#"><i class="fab fa-facebook"></i></a>
+    <a href="#"><i class="fab fa-twitter"></i></a>
+    <a href="#"><i class="fab fa-instagram"></i></a>
   </div>
-</div>
+</footer>
 
-<script>
-  // Simulate logout
-  function logout() {
-    localStorage.removeItem('token'); // Clear token
-    window.location.href = 'login.html'; // Redirect to login page
-  }
-
-  // Fetch dashboard data (simulated)
-  function fetchDashboardData() {
-    // Simulate API responses
-    const totalUsers = 150;
-    const totalPayments = 5000;
-    const pendingVerifications = 5;
-
-    document.getElementById('total-users').textContent = totalUsers;
-    document.getElementById('total-payments').textContent = `$${totalPayments}`;
-    document.getElementById('pending-verifications').textContent = pendingVerifications;
-
-    // Simulate service provider verification data
-    const providers = [
-      { userId: 1, name: 'John Doe', email: 'john@example.com' },
-      { userId: 2, name: 'Jane Smith', email: 'jane@example.com' }
-    ];
-
-    const verificationTable = document.getElementById('verification-table').getElementsByTagName('tbody')[0];
-    verificationTable.innerHTML = providers.map(provider => `
-                <tr>
-                    <td>${provider.userId}</td>
-                    <td>${provider.name}</td>
-                    <td>${provider.email}</td>
-                    <td><button class="verify-btn" onclick="verifyProvider(${provider.userId})">Verify</button></td>
-                </tr>
-            `).join('');
-
-    // Simulate payments data
-    const payments = [
-      { paymentId: 1, userId: 123, amount: 100.00, status: 'completed', timestamp: '2023-10-15T12:34:56Z' },
-      { paymentId: 2, userId: 456, amount: 150.00, status: 'pending', timestamp: '2023-10-16T10:11:12Z' }
-    ];
-
-    const paymentsTable = document.getElementById('payments-table').getElementsByTagName('tbody')[0];
-    paymentsTable.innerHTML = payments.map(payment => `
-                <tr>
-                    <td>${payment.paymentId}</td>
-                    <td>${payment.userId}</td>
-                    <td>$${payment.amount}</td>
-                    <td>${payment.status}</td>
-                    <td>${payment.timestamp}</td>
-                </tr>
-            `).join('');
-  }
-
-  // Verify a provider (simulated)
-  function verifyProvider(userId) {
-    alert(`Provider ${userId} verified successfully!`);
-    // Simulate API call to verify provider
-  }
-
-  // Fetch data when the page loads
-  fetchDashboardData();
-</script>
+<script src="../js/jquery-3.7.1.min.js"></script>
+<script src="../js/admindashboard.js"></script>
 </body>
 </html>

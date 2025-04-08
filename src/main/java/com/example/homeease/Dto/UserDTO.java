@@ -28,6 +28,7 @@ public class UserDTO {
     private String adminLevel; // Optional: Admin level (e.g., Super Admin, Support Admin)
 
     private String verificationStatus; // Verification status of the user (e.g., Pending, Verified)
+    private String status;
 
     private String idProofPath; // Path to the ID proof document (optional)
 

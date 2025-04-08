@@ -26,6 +26,7 @@ public class PaymentController {
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity<ResponseDTO> createPayment(@RequestBody PaymentDTO paymentDTO) {
+        System.out.println("///////////////////////////////////////" + paymentDTO);
         ResponseDTO responseDTO = paymentService.createPayment(paymentDTO);
         return ResponseEntity.ok()
                 .body(new ResponseDTO(VarList.OK, "Success", responseDTO));
@@ -44,6 +45,7 @@ public class PaymentController {
     }
     @GetMapping("get-by-booking/{bookingId}")
     public ResponseEntity<ResponseDTO> getPaymentByBookingId(@PathVariable int bookingId) {
+        System.out.println(bookingId);
         System.out.println("-----------------------------------------");
         try {
         ResponseDTO responseDTO = paymentService.getPaymentByBookingId(bookingId);

@@ -51,6 +51,7 @@ function login() {
                         // Redirect or show customer-specific content
                     }  else if (role === "ADMIN") {
                         console.log("User is a Customer");
+                        window.location.href = "../view/admindashboard.html";
                         // Redirect or show customer-specific content
                     } else {
                         console.log("Unknown role");

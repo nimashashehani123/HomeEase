@@ -120,6 +120,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
             if (user.getVerificationStatus() == null) {
                 user.setVerificationStatus("Pending"); // Example default value
             }
+            if (user.getStatus() == null) {
+                user.setStatus("Active"); // Example default value
+            }
             userRepository.save(user);
             // Return success response
             return VarList.Created;

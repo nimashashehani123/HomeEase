@@ -102,6 +102,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseDTO> getAllUsers() {
         ResponseDTO response = userService.getAllUsers();
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));

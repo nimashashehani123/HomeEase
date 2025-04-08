@@ -45,6 +45,9 @@ public class User {
     @Column(name = "verification_status", nullable = false)
     private String verificationStatus = "Pending";
 
+    @Column(name = "status", nullable = false)
+    private String status = "Active";
+
     @Column(name = "id_proof_path", nullable = true) // Optional for all users
     private String idProofPath;
 
