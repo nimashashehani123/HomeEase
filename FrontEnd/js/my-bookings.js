@@ -540,7 +540,7 @@ function initiatePayHerePayment(bookingId, amount) {
         const paymentData = {
             finalAmount: amount,
             status: "FULL_PAYMENT",
-            paymentDate: new Date().toISOString() // Produces ISO-8601 format
+            paymentDate: new Date().toISOString()
         };
 
         $.ajax({
@@ -816,7 +816,7 @@ function getPaymentFromBookingId(bookingId) {
         });
     });
 }
-
+/*
 async function generateActionButtons(booking, service) {
     const payment = await getPaymentFromBookingId(booking.bookingId);
     let buttons = '';
@@ -871,28 +871,28 @@ async function generateActionButtons(booking, service) {
     }
 
     return buttons;
-}
+}*/
 
 function generateDurationModal(bookingId) {
     return `
-    <div class="modal fade" id="durationModal-${bookingId}" tabindex="-1">
+   <div class="modal fade" id="durationModal-${bookingId}" tabindex="-1" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Complete Booking</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Duration (hours)</label>
+                        <label for="durationInput-${bookingId}" class="form-label">Duration (hours)</label>
                         <input type="number" id="durationInput-${bookingId}" 
-                               class="form-control" min="0.5" max="24" step="0.5" value="1">
+                               class="form-control" min="0.5" max="24" step="0.5" value="1" required>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" 
-                            onclick="updateBookingStatusWithDuration(${bookingId}, 'COMPLETED')">
+                    <button type="button" class="btn btn-primary submit-duration" 
+                            data-booking-id="${bookingId}">
                         Submit
                     </button>
                 </div>
@@ -903,10 +903,38 @@ function generateDurationModal(bookingId) {
 }
 
 function showDurationModal(bookingId) {
-    $(`#durationModal-${bookingId}`).modal('show');
+    const modalElement = document.getElementById(`durationModal-${bookingId}`);
+    const modal = new bootstrap.Modal(modalElement);
+
+    // Properly handle accessibility when showing
+    modalElement.removeAttribute('aria-hidden');
+    modalElement.setAttribute('aria-modal', 'true');
+
+    modal.show();
+
+    // Focus on the first input when modal opens
+    const input = modalElement.querySelector('input');
+    input.focus();
 }
 
+$(document).on('hidden.bs.modal', '.modal', function() {
+    $(this).attr('aria-hidden', 'true');
+    $(this).removeAttr('aria-modal');
+});
+
+$(document).on('click', '.complete-btn', function() {
+    const bookingId = $(this).data('booking-id');
+    showDurationModal(bookingId);
+});
+
+// Delegate event for submit buttons
+$(document).on('click', '.submit-duration', function() {
+    const bookingId = $(this).data('booking-id');
+    updateBookingStatusWithDuration(bookingId, 'COMPLETED');
+});
+
 function updateBookingStatusWithDuration(bookingId, status) {
+    console.log("f==============================================================")
     const duration = parseFloat($(`#durationInput-${bookingId}`).val());
 
     if (!duration || duration <= 0) {
@@ -1059,10 +1087,10 @@ function processPayment() {
     const paymentType = $('#paymentType').val();
 
     $('#paymentModal').modal('hide');
-    initiatePayHerePayment(bookingId, amount, paymentType);
+    initiatePayHerePayment(bookingId, amount);
 }
 
-function initiatePayHerePayment(bookingId, amount, paymentType) {
+function initiatePayHerePayment(bookingId, amount) {
     // Payment configuration
     const paymentConfig = {
         "sandbox": true,
@@ -1082,7 +1110,6 @@ function initiatePayHerePayment(bookingId, amount, paymentType) {
         "city": "Colombo",
         "country": "Sri Lanka",
         "custom_1": bookingId,
-        "custom_2": paymentType
     };
 
     // Open PayHere checkout
@@ -1093,13 +1120,18 @@ function initiatePayHerePayment(bookingId, amount, paymentType) {
         if (typeof payhere.close === 'function') {
             payhere.close();
         }
-        processPaymentAfterCheckout(bookingId, amount, paymentType);
+        processPaymentAfterCheckout(bookingId, amount);
     }, 1000); // Small delay to ensure checkout opens before closing
 }
 
-function processPaymentAfterCheckout(bookingId, amount, paymentType) {
+async function processPaymentAfterCheckout(bookingId, amount) {
+    const paymentType = await getPaymentFromBookingId(bookingId);
+    console.log(paymentType)
+    console.log(paymentType.paymentId);
+    const paid = paymentType.paymentId;
+
     // Create payment data based on type
-    const paymentData = paymentType === 'DEPOSIT' ? {
+    const paymentData = paymentType === null ? {
         bookingId: bookingId,
         depositAmount: amount,
         finalAmount: 0.0,
@@ -1112,11 +1144,11 @@ function processPaymentAfterCheckout(bookingId, amount, paymentType) {
     };
 
     // Determine endpoint and method
-    const url = paymentType === 'DEPOSIT'
+    const url = paymentType === null
         ? 'http://localhost:8080/api/v1/payments/add'
-        : `http://localhost:8080/api/v1/payments/update-by-booking/${bookingId}`;
+        : `http://localhost:8080/api/v1/payments/${paid}`;
 
-    const method = paymentType === 'DEPOSIT' ? 'POST' : 'PATCH';
+    const method = paymentType === null ? 'POST' : 'PATCH';
 
     // Process payment
     $.ajax({
@@ -1127,15 +1159,17 @@ function processPaymentAfterCheckout(bookingId, amount, paymentType) {
         headers: {
             "Authorization": "Bearer " + localStorage.getItem("token")
         },
-        success: function(response) {
+        success: function (response) {
             if (response.code === 200) {
+                console.log(response)
+
                 alert('Payment processed successfully!');
                 loadBookings(); // Refresh the list
             } else {
                 alert('Error: ' + (response.message || 'Payment failed'));
             }
         },
-        error: function(xhr) {
+        error: function (xhr) {
             alert('Payment failed: ' +
                 (xhr.responseJSON?.message || 'Please try again'));
         }
@@ -1147,7 +1181,7 @@ async function generateActionButtons(booking, service) {
     const payment = await getPaymentFromBookingId(booking.bookingId);
     let buttons = '';
 
-    if (userRole === 'CUSTOMER') {
+  /*  if (userRole === 'CUSTOMER') {
         if (booking.status === 'PENDING') {
             buttons = `<button class="btn btn-sm btn-danger" onclick="cancelBooking(${booking.bookingId})">
                 <i class="bi bi-x-circle"></i> Cancel</button>`;
@@ -1167,7 +1201,57 @@ async function generateActionButtons(booking, service) {
                     <i class="bi bi-credit-card"></i> Pay Rs.${remainingAmount.toFixed(2)}</button>`;
             }
         }
+    }*/
+    if (userRole === 'CUSTOMER') {
+        if (booking.status === 'PENDING') {
+            buttons = `
+                <button class="btn btn-sm btn-danger" onclick="cancelBooking(${booking.bookingId})">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </button>
+            `;
+        } else if (booking.status === 'ACCEPTED') {
+            if (!payment) {
+                buttons = `
+                <button class="btn btn-sm btn-success" onclick="showPaymentModal(${booking.bookingId}, ${service.fixedPrice}, 'DEPOSIT')">
+                    <i class="bi bi-credit-card"></i> Pay Rs.${service.fixedPrice.toFixed(2)}
+                </button>
+            `;
+            }
+        } else if (booking.status === 'COMPLETED') {
+            if (payment && payment.status === 'DEPOSIT') {
+                const remainingAmount = calculatepayPaymentAmount(booking, service);
+                buttons = `
+                <button class="btn btn-sm btn-success" onclick="showPaymentModal(${booking.bookingId}, ${remainingAmount}, 'FINAL')">
+                    <i class="bi bi-credit-card"></i> Pay Rs.${remainingAmount.toFixed(2)}
+                </button>
+            `;
+            }
+        }
+    } else if (userRole === 'SERVICE_PROVIDER') {
+        if (booking.status === 'PENDING') {
+            buttons = `
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-success" onclick="updateBookingStatus(${booking.bookingId}, 'ACCEPTED')">
+                        <i class="bi bi-check-circle"></i> Accept
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="updateBookingStatus(${booking.bookingId}, 'REJECTED')">
+                        <i class="bi bi-x-circle"></i> Reject
+                    </button>
+                </div>
+            `;
+        } else if (booking.status === 'ACCEPTED') {
+            buttons = `
+            <div class="btn-group">
+                <button class="btn btn-sm btn-primary complete-btn" 
+                        data-booking-id="${booking.bookingId}">
+                    <i class="bi bi-check-all"></i> Complete
+                </button>
+            </div>
+            ${generateDurationModal(booking.bookingId)}
+        `;
+        }
     }
+
     // ... rest of your button generation logic ...
     return buttons;
 }

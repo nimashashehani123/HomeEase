@@ -204,7 +204,6 @@
     <ul class="nav-links">
       <li><a href="../view/admindashboard.html">Home</a></li>
       <li><a href="../view/users.html"  style="color: white">Users</a></li>
-      <li><a href="../view/providers.html">Providers</a></li>
       <li><a href="../view/services.html">Services</a></li>
     </ul>
     <a href="#profile" class="logout-btn">
@@ -507,14 +506,13 @@
     $.ajax({
       url: `${API_BASE_URL}/users`,
       type: 'GET',
-      data: params,
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
       success: function(response) {
-        console.log(response.data)
-        renderUsers(response.data);
-        totalUsers = response.data.total;
+        console.log(response.data.data)
+        renderUsers(response.data.data);
+        totalUsers = response.data.data.length;
         updatePagination();
       },
       error: function(xhr) {
@@ -568,16 +566,15 @@
               <span class="badge ${roleBadgeClass} badge-role">${user.role.replace('_', ' ')}</span>
             </div>
             <div class="col-md-1">
-              <span class="badge ${verificationBadgeClass} status-badge">${user.verificationStatus || 'N/A'}</span>
+              ${user.role === 'SERVICE_PROVIDER' ?
+              `<span class="badge ${verificationBadgeClass} status-badge">${user.verificationStatus || 'N/A'}</span>`
+              : ''}
             </div>
             <div class="col-md-1">
               <span class="badge ${statusBadgeClass} status-badge">${user.status}</span>
             </div>
             <div class="col-md-2">
               <div class="action-btns">
-                <button class="btn btn-sm btn-outline-primary" onclick="editUser(${user.userId})">
-                  <i class="bi bi-pencil"></i>
-                </button>
                 ${user.role === 'SERVICE_PROVIDER' ? `
                 <button class="btn btn-sm btn-outline-info" onclick="viewDocuments(${user.userId})">
                   <i class="bi bi-file-earmark-text"></i>
@@ -707,13 +704,13 @@
 
   // User CRUD Operations
   function editUser(userId) {
+    console.log("fgfgfsgfgfghfdhfd",userId)
     $.ajax({
       url: `${API_BASE_URL}/users/${userId}`,
       type: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      success: function(user) {
+      success: function(res) {
+     const user =  res.data.data;
+
         $('#modalTitle').text('Edit User');
         $('#userId').val(user.userId);
         $('#userName').val(user.name);

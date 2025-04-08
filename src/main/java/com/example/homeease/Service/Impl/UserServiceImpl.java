@@ -20,10 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional
@@ -167,9 +164,17 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public ResponseDTO getAllUsers() {
-        List<UserDTO> userList = modelMapper.map(userRepository.findAll(),
-                new TypeToken<List<UserDTO>>() {}.getType());
-        return new ResponseDTO(VarList.OK, "Users retrieved successfully", userList);
+        System.out.println("**********************************************************");
+        List<User> user = userRepository.findAll();
+        List<UserDTO> dtos = new ArrayList<>();
+
+        for (User users : user) {
+            UserDTO dto = modelMapper.map(users, UserDTO.class);
+
+            dtos.add(dto);
+        }
+        System.out.println(dtos);
+        return new ResponseDTO(200, "Success", dtos);
     }
 
     @Override

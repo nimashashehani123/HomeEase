@@ -37,8 +37,8 @@ function register() {
             console.log(response);
             console.log(response.data.email);
             console.log(response.data.token);
+            localStorage.removeItem("token");
             alert("Registration successful!...........");
-            localStorage.setItem("token", response.data.token); // token ek local eke save krnw
         },
 
         error: function(xhr, status, error) {

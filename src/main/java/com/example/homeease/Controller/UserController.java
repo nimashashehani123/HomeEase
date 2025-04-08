@@ -37,10 +37,6 @@ public class UserController {
             int res = userService.addUser(userDTO);
             switch (res) {
                 case VarList.Created -> {
-                  /*  String token = jwtUtil.generateToken(userDTO);
-                    AuthDTO authDTO = new AuthDTO();
-                    authDTO.setEmail(userDTO.getEmail());
-                    authDTO.setToken(token);*/
                     return ResponseEntity.status(HttpStatus.CREATED)
                             .body(new ResponseDTO(VarList.Created, "Success", userDTO));
                 }
@@ -102,14 +98,22 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ResponseDTO> getAllUsers() {
-        ResponseDTO response = userService.getAllUsers();
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
+        System.out.println("inside**********************************************************");
+        try {
+        ResponseDTO responseDTO = userService.getAllUsers();
+            return ResponseEntity.ok()
+                    .body(new ResponseDTO(VarList.OK, "Success", responseDTO));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(VarList.Internal_Server_Error, e.getMessage(), null));
+        }
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<ResponseDTO> getUserById(@PathVariable int userId) {
+        System.out.println("===================================================");
         try {
             ResponseDTO responseDTO = userService.getUserById(userId);
             return ResponseEntity.ok()
