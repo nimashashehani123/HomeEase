@@ -14,4 +14,7 @@ public interface UserService {
     ResponseDTO getAllServiceProviderIds();
     int changePassword(String token, String currentPassword, String newPassword);
     int updateUserPartial(UserDTO userDTO);
+    ResponseDTO toggleUserStatus(int userId);
+    ResponseDTO getUserDocuments(int userId);
+    ResponseDTO updateVerificationStatus(int userId, String status);
 }

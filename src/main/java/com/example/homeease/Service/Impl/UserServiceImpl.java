@@ -105,6 +105,39 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
+    public ResponseDTO getUserDocuments(int userId) throws ResourceNotFoundException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        // Check if documents exist
+        if (user.getIdProofPath() == null && user.getAddressProofPath() == null) {
+            return new ResponseDTO(VarList.Not_Found, "No documents found for user", null);
+        }
+
+        // Create response data
+        Map<String, String> documents = new HashMap<>();
+        documents.put("idProofPath", user.getIdProofPath());
+        documents.put("addressProofPath", user.getAddressProofPath());
+        documents.put("verificationStatus", user.getVerificationStatus().toString());
+
+        return new ResponseDTO(VarList.OK, "Documents retrieved successfully", documents);
+    }
+
+    @Override
+    public ResponseDTO updateVerificationStatus(int userId, String status)
+            throws ResourceNotFoundException {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        // Update verification status
+        user.setVerificationStatus(status);
+        userRepository.save(user);
+        // Return minimal response
+        return new ResponseDTO(VarList.OK, "Verification status updated", null);
+    }
+
+    @Override
     public int addUser(UserDTO userDTO) {
         if (userRepository.existsByEmail(userDTO.getEmail())) {
             return VarList.Not_Acceptable;
@@ -176,6 +209,28 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         return VarList.Updated;
     }
+    @Override
+    public ResponseDTO toggleUserStatus(int userId) {
+        // Check if user exists
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            return new ResponseDTO(VarList.Not_Found, "User not found with id: " + userId, null);
+        }
+
+        User user = optionalUser.get();
+
+        // Toggle the status
+        String newStatus = user.getStatus().equals("Active")
+                ? "Inactive"
+                : "Active";
+
+        user.setStatus(newStatus);
+        userRepository.save(user);
+
+        // Return success response
+        return new ResponseDTO(VarList.OK, "User status updated successfully", newStatus);
+    }
+
     @Override
     public ResponseDTO deleteUser(int userId) {
         if (!userRepository.existsById(userId)) {

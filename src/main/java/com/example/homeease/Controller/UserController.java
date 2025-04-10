@@ -1,5 +1,6 @@
 package com.example.homeease.Controller;
 
+import com.example.homeease.Advisor.ResourceNotFoundException;
 import com.example.homeease.Dto.*;
 import com.example.homeease.Service.UserService;
 import com.example.homeease.Utill.JwtUtil;
@@ -90,7 +91,30 @@ public class UserController {
                             "Error: " + e.getMessage(), null));
         }
     }
+    @PatchMapping("/{userId}/verification")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ResponseDTO> updateVerificationStatus(
+            @PathVariable int userId,
+            @RequestParam String status) {
 
+        try {
+            ResponseDTO responseDTO = userService.updateVerificationStatus(
+                    userId,
+                    status
+            );
+            return ResponseEntity.ok()
+                    .body(new ResponseDTO(VarList.OK, "Verification status updated", responseDTO));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseDTO(VarList.Bad_Request, "Invalid status value", null));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDTO(VarList.Not_Found, e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(VarList.Internal_Server_Error, e.getMessage(), null));
+        }
+    }
 
     @PatchMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDTO> updateUser(
@@ -168,7 +192,6 @@ public class UserController {
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ResponseDTO> getAllUsers() {
-        System.out.println("inside**********************************************************");
         try {
         ResponseDTO responseDTO = userService.getAllUsers();
             return ResponseEntity.ok()
@@ -210,7 +233,42 @@ public class UserController {
         }
     }
 
+    @GetMapping("/{userId}/documents")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ResponseDTO> getUserDocuments(@PathVariable int userId) {
+        try {
+            ResponseDTO responseDTO = userService.getUserDocuments(userId);
+            return ResponseEntity.ok()
+                    .body(new ResponseDTO(VarList.OK, "Success", responseDTO));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDTO(VarList.Not_Found, e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(VarList.Internal_Server_Error, e.getMessage(), null));
+        }
+    }
 
+    @PatchMapping("/{userId}/status")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ResponseDTO> toggleUserStatus(@PathVariable int userId) {
+        ResponseDTO responseDTO = userService.toggleUserStatus(userId);
+
+        // Map service response to appropriate HTTP status
+        HttpStatus httpStatus;
+        switch (responseDTO.getCode()) {
+            case VarList.OK:
+                httpStatus = HttpStatus.OK;
+                break;
+            case VarList.Not_Found:
+                httpStatus = HttpStatus.NOT_FOUND;
+                break;
+            default:
+                httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return ResponseEntity.status(httpStatus).body(responseDTO);
+    }
 
 
     @GetMapping("/{userId}")

@@ -206,7 +206,7 @@
       <li><a href="../view/users.html"  style="color: white">Users</a></li>
       <li><a href="../view/services.html">Services</a></li>
     </ul>
-    <a href="#profile" class="logout-btn">
+    <a href="../view/profile.html" class="logout-btn">
       <i class="fas fa-user"></i> Profile
     </a>
     <div class="hamburger" id="hamburger">
@@ -222,15 +222,16 @@
       <button id="refresh-btn" class="btn btn-outline-secondary me-2">
         <i class="bi bi-arrow-clockwise"></i> Refresh
       </button>
-      <button id="add-user-btn" class="btn btn-danger">
-        <i class="bi bi-plus-circle"></i> Add User
-      </button>
     </div>
   </div>
 
   <div class="filter-section">
     <div class="row">
-      <div class="col-md-4 mb-3">
+      <div class="col-md-3 mb-3">
+        <label for="searchInput" class="form-label">Search</label>
+        <input type="text" class="form-control" id="searchInput" placeholder="Name, email, phone">
+      </div>
+      <div class="col-md-3 mb-3">
         <label for="role-filter" class="form-label">Role</label>
         <select id="role-filter" class="form-select">
           <option value="ALL">All Roles</option>
@@ -239,7 +240,7 @@
           <option value="CUSTOMER">Customer</option>
         </select>
       </div>
-      <div class="col-md-4 mb-3">
+      <div class="col-md-2 mb-3">
         <label for="status-filter" class="form-label">Status</label>
         <select id="status-filter" class="form-select">
           <option value="ALL">All Statuses</option>
@@ -247,23 +248,23 @@
           <option value="INACTIVE">Inactive</option>
         </select>
       </div>
-      <div class="col-md-4 mb-3">
+      <div class="col-md-2 mb-3">
         <label for="verification-filter" class="form-label">Verification</label>
         <select id="verification-filter" class="form-select">
           <option value="ALL">All</option>
-          <option value="PENDING">Pending</option>
+          <option value="Pending">Pending</option>
           <option value="APPROVED">Approved</option>
-          <option value="REJECTED">Rejected</option>
+          <option value="Rejected">Rejected</option>
         </select>
       </div>
-    </div>
-    <div class="d-flex justify-content-end">
-      <button id="apply-filters" class="btn btn-danger me-2">
-        <i class="bi bi-funnel"></i> Apply Filters
-      </button>
-      <button id="reset-filters" class="btn btn-outline-secondary">
-        <i class="bi bi-x-circle"></i> Reset
-      </button>
+      <div class="col-md-2 mb-3 d-flex align-items-end">
+        <button id="apply-filters" class="btn btn-danger w-100 me-2">
+          <i class="bi bi-funnel"></i> Filter
+        </button>
+        <button id="reset-filters" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-x-circle"></i> Reset
+        </button>
+      </div>
     </div>
   </div>
 
@@ -400,7 +401,7 @@
                 <h6 class="mb-0">ID Proof</h6>
               </div>
               <div class="card-body text-center">
-                <img id="idProofImage" src="https://via.placeholder.com/400" class="img-fluid mb-3" alt="ID Proof">
+                <img id="idProofImage" src=" " class="img-fluid mb-3" alt="ID Proof">
                 <a id="idProofLink" href="#" target="_blank" class="btn btn-outline-primary">
                   <i class="bi bi-download"></i> Download
                 </a>
@@ -413,7 +414,7 @@
                 <h6 class="mb-0">Address Proof</h6>
               </div>
               <div class="card-body text-center">
-                <img id="addressProofImage" src="https://via.placeholder.com/400" class="img-fluid mb-3" alt="Address Proof">
+                <img id="addressProofImage" src=" " class="img-fluid mb-3" alt="Address Proof">
                 <a id="addressProofLink" href="#" target="_blank" class="btn btn-outline-primary">
                   <i class="bi bi-download"></i> Download
                 </a>
@@ -449,6 +450,7 @@
   let currentPage = 1;
   const usersPerPage = 10;
   let totalUsers = 0;
+  let allUsers = [];
 
   // Current filters
   let currentFilters = {
@@ -510,9 +512,9 @@
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
       success: function(response) {
-        console.log(response.data.data)
-        renderUsers(response.data.data);
-        totalUsers = response.data.data.length;
+        allUsers = response.data.data; // Store all users
+        renderUsers(allUsers); // Initially render all users
+        totalUsers = allUsers.length;
         updatePagination();
       },
       error: function(xhr) {
@@ -546,7 +548,7 @@
       let verificationBadgeClass = '';
       if (user.verificationStatus === 'APPROVED') verificationBadgeClass = 'bg-success';
       if (user.verificationStatus === 'Pending') verificationBadgeClass = 'bg-warning text-dark';
-      if (user.verificationStatus === 'REJECTED') verificationBadgeClass = 'bg-danger';
+      if (user.verificationStatus === 'Rejected') verificationBadgeClass = 'bg-danger';
 
       html += `
         <div class="user-card p-3 mb-3">
@@ -632,16 +634,53 @@
     `);
   }
 
-  // Apply filters
   function applyFilters() {
     currentFilters = {
       role: $('#role-filter').val(),
       status: $('#status-filter').val(),
       verification: $('#verification-filter').val(),
-      search: currentFilters.search // preserve search
+      search: $('#searchInput').val().trim().toLowerCase()
     };
-    currentPage = 1;
-    loadUsers();
+
+    filterUsers();
+  }
+
+  function filterUsers() {
+    let filteredUsers = allUsers;
+
+    // Apply role filter
+    if (currentFilters.role !== 'ALL') {
+      filteredUsers = filteredUsers.filter(user =>
+              user.role === currentFilters.role
+      );
+    }
+
+    // Apply status filter
+    if (currentFilters.status !== 'ALL') {
+      filteredUsers = filteredUsers.filter(user =>
+              user.status.toUpperCase() === currentFilters.status
+      );
+    }
+
+    // Apply verification filter (only for service providers)
+    if (currentFilters.verification !== 'ALL') {
+      filteredUsers = filteredUsers.filter(user => {
+        return user.verificationStatus === currentFilters.verification;
+      });
+    }
+
+    // Apply search filter
+    if (currentFilters.search) {
+      filteredUsers = filteredUsers.filter(user =>
+              user.name.toLowerCase().includes(currentFilters.search) ||
+              user.email.toLowerCase().includes(currentFilters.search) ||
+              (user.phoneNumber && user.phoneNumber.includes(currentFilters.search))
+      );
+    }
+
+    renderUsers(filteredUsers);
+    totalUsers = filteredUsers.length;
+    updatePagination();
   }
 
   // Reset filters
@@ -649,21 +688,22 @@
     $('#role-filter').val('ALL');
     $('#status-filter').val('ALL');
     $('#verification-filter').val('ALL');
+    $('#searchInput').val('');
     currentFilters = {
       role: 'ALL',
       status: 'ALL',
       verification: 'ALL',
       search: ''
     };
-    currentPage = 1;
-    loadUsers();
+    renderUsers(allUsers); // Show all users again
+    totalUsers = allUsers.length;
+    updatePagination();
   }
 
   // Search users
   function searchUsers() {
-    currentFilters.search = $('#searchInput').val();
-    currentPage = 1;
-    loadUsers();
+    currentFilters.search = $('#searchInput').val().trim().toLowerCase();
+    filterUsers();
   }
 
   // Refresh users
@@ -798,9 +838,9 @@
   }
 
   function toggleStatus(userId, currentStatus) {
-    const newStatus = currentStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+    const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
 
-    if (!confirm(`Are you sure you want to ${newStatus === 'ACTIVE' ? 'activate' : 'deactivate'} this user?`)) {
+    if (!confirm(`Are you sure you want to ${newStatus === 'Active' ? 'activate' : 'deactivate'} this user?`)) {
       return;
     }
 
@@ -829,21 +869,31 @@
       headers: {
         'Authorization': `Bearer ${token}`
       },
-      success: function(docs) {
-        $('#idProofImage').attr('src', docs.idProofPath || 'https://via.placeholder.com/400');
-        $('#addressProofImage').attr('src', docs.addressProofPath || 'https://via.placeholder.com/400');
-        $('#idProofLink').attr('href', docs.idProofPath || '#');
-        $('#addressProofLink').attr('href', docs.addressProofPath || '#');
-        $('#currentVerificationStatus').text(docs.verificationStatus);
-        $('#currentVerificationStatus').removeClass('bg-warning bg-success bg-danger')
-                .addClass(docs.verificationStatus === 'APPROVED' ? 'bg-success' :
-                        docs.verificationStatus === 'REJECTED' ? 'bg-danger' : 'bg-warning');
+      success: function(response) {
+        if (response.code === 200) {
+          const docs = response.data.data;
 
-        // Store current user ID for verification actions
-        $('#docsModal').data('userId', userId);
+          // Set document paths
+          $('#idProofImage').attr('src', 'uploads/' + (docs.idProofPath || 'default.jpg'));
+          $('#addressProofImage').attr('src', 'uploads/' + (docs.addressProofPath || 'default.jpg'));
+          $('#idProofLink').attr('href', 'uploads/' + (docs.idProofPath || '#'));
+          $('#addressProofLink').attr('href', 'uploads/' + (docs.addressProofPath || '#'));
 
-        const modal = new bootstrap.Modal($('#docsModal')[0]);
-        modal.show();
+          // Set verification status
+          $('#currentVerificationStatus').text(docs.verificationStatus);
+          $('#currentVerificationStatus').removeClass('bg-warning bg-success bg-danger')
+                  .addClass(docs.verificationStatus === 'Approved' ? 'bg-success' :
+                          docs.verificationStatus === 'Rejected' ? 'bg-danger' : 'bg-warning');
+
+          // Store user ID
+          $('#docsModal').data('userId', userId);
+
+          // Show modal
+          const modal = new bootstrap.Modal($('#docsModal')[0]);
+          modal.show();
+        } else {
+          showError(response.message);
+        }
       },
       error: function(xhr) {
         showError('Failed to load user documents');
@@ -851,7 +901,6 @@
       }
     });
   }
-
   // Verification actions
   $('#approveVerificationBtn').click(function() {
     updateVerification('APPROVED');
@@ -863,27 +912,30 @@
 
   function updateVerification(status) {
     const userId = $('#docsModal').data('userId');
-    const reason = status === 'REJECTED' ? prompt('Enter rejection reason:') : null;
 
-    if (status === 'REJECTED' && !reason) return;
+    // Build URL with query parameters
+    let url = `${API_BASE_URL}/users/${userId}/verification?status=${status}`;
 
     $.ajax({
-      url: `${API_BASE_URL}/users/${userId}/verification`,
+      url: url,
       type: 'PATCH',
-      data: JSON.stringify({ status, reason }),
-      contentType: 'application/json',
       headers: {
         'Authorization': `Bearer ${token}`
       },
-      success: function() {
-        $('#docsModal').modal('hide');
-        loadUsers();
+      success: function(response) {
+        if (response.code === 200) {
+          $('#docsModal').modal('hide');
+          loadUsers();
+        } else {
+          showError(response.message);
+        }
       },
       error: function(xhr) {
-        showError('Failed to update verification status');
+        showError(xhr.responseJSON?.message || 'Failed to update verification status');
         console.error('Error updating verification:', xhr.responseText);
       }
     });
+
   }
 </script>
 </body>

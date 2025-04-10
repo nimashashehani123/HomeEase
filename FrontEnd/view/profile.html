@@ -206,24 +206,12 @@
     </style>
 </head>
 <body>
-<!-- Navbar -->
+<!-- Navbar (will be populated by JavaScript) -->
 <nav class="navbar">
     <div class="container">
-        <a href="#" class="logo">HomeEase</a>
-        <ul class="nav-links">
-            <li><a href="../view/admindashboard.html">Home</a></li>
-            <li><a href="../view/users.html">Users</a></li>
-            <li><a href="../view/services.html">Services</a></li>
-        </ul>
-        <a href="#profile" class="logout-btn" style="background-color: #666666; color: white;">
-            <i class="fas fa-user"></i> Profile
-        </a>
-        <div class="hamburger" id="hamburger">
-            <i class="fas fa-bars"></i>
-        </div>
+        <!-- Content will be inserted here by renderNavbar() -->
     </div>
 </nav>
-
 <div class="container py-5">
     <div class="row">
         <div class="col-lg-4">
@@ -417,6 +405,99 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        renderNavbar();
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'token') {
+                renderNavbar();
+            }
+        });
+    });
+    function renderNavbar() {
+        const token = localStorage.getItem('token');
+        const navbarContainer = document.querySelector('nav.navbar .container');
+
+        if (!token) {
+            // Render the logged-out navbar
+            navbarContainer.innerHTML = `
+      <a href="#" class="logo">HomeEase</a>
+      <ul class="nav-links">
+        <li><a href="../view/index.html">Home</a></li>
+        <li><a href="../view/services.html">Services</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <a href="../view/login.html" class="login-btn">
+        <i class="fas fa-user"></i> Login
+      </a>
+      <div class="hamburger" id="hamburger">
+        <i class="fas fa-bars"></i>
+      </div>
+    `;
+        } else {
+            try {
+                // Decode the token to get the role
+                const decoded = jwt_decode(token);
+                const userRole = decoded.role; // Assuming your JWT has a 'role' claim
+
+                // Redirect based on role
+                if (userRole === 'ADMIN') {
+                    navbarContainer.innerHTML = `
+
+    <a href="#" class="logo">HomeEase [Admin]</a>
+    <ul class="nav-links">
+      <li><a href="../view/admindashboard.html">Home</a></li>
+      <li><a href="../view/users.html">Users</a></li>
+      <li><a href="../view/services.html" style="color: white">Services</a></li>
+    </ul>
+    <a href="../view/profile.html" class="logout-btn">
+     <i class="fas fa-user"></i> Profile
+    </a>
+    <div class="hamburger" id="hamburger">
+      <i class="fas fa-bars"></i>
+    </div>
+          `;
+                }else{
+                    // Render the logged-in navbar
+                    navbarContainer.innerHTML = `
+      <a href="#" class="logo">HomeEase</a>
+      <ul class="nav-links">
+        <li><a href="#" onclick="navigateHome()">Home</a></li>
+        <li><a href="../view/services.html">Services</a></li>
+        <li><a href="../view/mybookings.html">Bookings</a></li>
+        <li><a href="../view/notifications.html">Notifications</a></li>
+      </ul>
+      <a href="../view/profile.html" class="logout-btn">
+        <i class="fas fa-user"></i> Profile
+      </a>
+      <div class="hamburger" id="hamburger">
+        <i class="fas fa-bars"></i>
+      </div>
+    `;
+                }
+            } catch (error) {
+                console.error('Error decoding token:', error);
+                window.location.href = 'login.html';
+            }
+
+        }
+
+        // Re-attach event listeners after rendering
+        setupNavbarEvents();
+    }
+    function setupNavbarEvents() {
+        // Hamburger menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (hamburger && navLinks) {
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+        }
+    }
+
     // Base API URL - adjust this to your backend endpoint
     const API_BASE_URL = 'http://localhost:8080/api/v1';
 
