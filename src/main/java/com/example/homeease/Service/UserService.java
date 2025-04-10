@@ -6,11 +6,12 @@ import com.example.homeease.Dto.UserDTO;
 
 public interface UserService {
     int addUser(UserDTO userDTO);
-    ResponseDTO updateUser(UserDTO userDTO);
     ResponseDTO deleteUser(int userId);
     ResponseDTO getAllUsers();
     ResponseDTO getUserById(int userId);
     UserDTO searchUser(String username);
     ResponseDTO getUserIdByEmail(String email);
     ResponseDTO getAllServiceProviderIds();
+    int changePassword(String token, String currentPassword, String newPassword);
+    int updateUserPartial(UserDTO userDTO);
 }

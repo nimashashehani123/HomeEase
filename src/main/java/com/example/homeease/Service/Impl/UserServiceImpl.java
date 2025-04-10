@@ -7,6 +7,7 @@ import com.example.homeease.Dto.UserDTO;
 import com.example.homeease.Entity.User;
 import com.example.homeease.Repo.UserRepository;
 import com.example.homeease.Service.UserService;
+import com.example.homeease.Utill.JwtUtil;
 import com.example.homeease.Utill.VarList;
 import com.example.homeease.enums.UserRole;
 import org.modelmapper.ModelMapper;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,12 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtTokenUtil;
 
 
     public UserDTO loadUserDetailsByUsername(String username) throws UsernameNotFoundException {
@@ -127,28 +135,47 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
 
-    @Override
-    public ResponseDTO updateUser(UserDTO userDTO) {
-        if (!userRepository.existsById(userDTO.getUserId())) {
-            return new ResponseDTO(VarList.Not_Found, "User not found with id: " + userDTO.getUserId(), null);
+    public int updateUserPartial(UserDTO userDTO) {
+        // 1. Fetch the existing user
+        Optional<User> existingUser = userRepository.findById(userDTO.getUserId());
+
+        if (!existingUser.isPresent()) {
+            return VarList.Not_Found;
         }
 
-        // Map UserDTO to User entity
-        User user = modelMapper.map(userDTO, User.class);
+        User user = existingUser.get();
 
-        // Encrypt the password if it's being updated
-        if (userDTO.getPassword() != null) {
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        // 2. Update only the fields that are present in the DTO
+        if (userDTO.getName() != null) {
+            user.setName(userDTO.getName());
+        }
+        if (userDTO.getEmail() != null) {
+            user.setEmail(userDTO.getEmail());
+        }
+        if (userDTO.getPhoneNumber() != null) {
+            user.setPhoneNumber(userDTO.getPhoneNumber());
+        }
+        if (userDTO.getAddress() != null) {
+            user.setAddress(userDTO.getAddress());
+        }
+        if (userDTO.getServiceArea() != null) {
+            user.setServiceArea(userDTO.getServiceArea());
+        }
+        if (userDTO.getAdminLevel() != null) {
+            user.setAdminLevel(userDTO.getAdminLevel());
+        }
+        if (userDTO.getIdProofPath() != null) {
+            user.setIdProofPath(userDTO.getIdProofPath());
+        }
+        if (userDTO.getAddressProofPath() != null) {
+            user.setAddressProofPath(userDTO.getAddressProofPath());
         }
 
-        // Save the updated user
+        // 3. Save the updated user
         userRepository.save(user);
 
-        // Return success response
-        return new ResponseDTO(VarList.OK, "User updated successfully", userDTO);
+        return VarList.Updated;
     }
-
     @Override
     public ResponseDTO deleteUser(int userId) {
         if (!userRepository.existsById(userId)) {
@@ -160,6 +187,32 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         // Return success response
         return new ResponseDTO(VarList.OK, "User deleted successfully", null);
+    }
+
+    @Override
+    public int changePassword(String token, String currentPassword, String newPassword) {
+        // Extract username from token
+        String username = jwtTokenUtil.getUsernameFromToken(token);
+
+        // Find user by username
+        User user = userRepository.findByEmail(username);
+
+
+        // Verify current password
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            return VarList.Unauthorized;
+        }
+
+        // Validate new password (add your own validation rules)
+        if (newPassword == null || newPassword.trim().isEmpty()) {
+            return VarList.Bad_Request;
+        }
+
+        // Update password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        return VarList.Updated;
     }
 
     @Override

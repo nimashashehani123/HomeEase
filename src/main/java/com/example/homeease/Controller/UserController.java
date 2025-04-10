@@ -1,17 +1,24 @@
 package com.example.homeease.Controller;
 
-import com.example.homeease.Dto.AuthDTO;
-import com.example.homeease.Dto.LoginDTO;
-import com.example.homeease.Dto.ResponseDTO;
-import com.example.homeease.Dto.UserDTO;
+import com.example.homeease.Dto.*;
 import com.example.homeease.Service.UserService;
 import com.example.homeease.Utill.JwtUtil;
 import com.example.homeease.Utill.VarList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/users")
@@ -56,7 +63,7 @@ public class UserController {
     }
 
     @GetMapping("/allProviderIds")
-    @PreAuthorize("hasRole('SERVICE_PROVIDER')")
+    @PreAuthorize("hasAuthority('SERVICE_PROVIDER')")
     public ResponseEntity<ResponseDTO> getAllCategoryIds() {
         try {
             ResponseDTO responseDTO = userService.getAllServiceProviderIds();
@@ -85,12 +92,73 @@ public class UserController {
     }
 
 
-    @PutMapping
-    public ResponseEntity<ResponseDTO> updateUser(@RequestBody UserDTO userDTO) {
-        ResponseDTO response = userService.updateUser(userDTO);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
-    }
+    @PatchMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseDTO> updateUser(
+            @RequestPart("userDTO") UserDTO userDTO,
+            @RequestPart(value = "idProof", required = false) MultipartFile idProof,
+            @RequestPart(value = "addressProof", required = false) MultipartFile addressProof) {
 
+        try {
+            String uploadDir = "FrontEnd/view/uploads/";
+
+            // Handle ID proof update
+            if (idProof != null && !idProof.isEmpty()) {
+                String filename = UUID.randomUUID().toString() + "_" + idProof.getOriginalFilename();
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+                Path path = Paths.get(uploadDir + filename);
+                Files.copy(idProof.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+                if (userDTO.getIdProofPath() != null) {
+                    Path oldFilePath = Paths.get(uploadDir + userDTO.getIdProofPath());
+                    Files.deleteIfExists(oldFilePath);
+                }
+                userDTO.setIdProofPath(filename);
+            }
+
+            // Handle address proof update
+            if (addressProof != null && !addressProof.isEmpty()) {
+                String filename = UUID.randomUUID().toString() + "_" + addressProof.getOriginalFilename();
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+                Path path = Paths.get(uploadDir + filename);
+                Files.copy(addressProof.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+                if (userDTO.getAddressProofPath() != null) {
+                    Path oldFilePath = Paths.get(uploadDir + userDTO.getAddressProofPath());
+                    Files.deleteIfExists(oldFilePath);
+                }
+                userDTO.setAddressProofPath(filename);
+            }
+
+            // Update user with partial data
+            int result = userService.updateUserPartial(userDTO);
+
+            if (result == VarList.Updated) {
+                return ResponseEntity.ok()
+                        .body(new ResponseDTO(VarList.Updated, "User updated", userDTO));
+            } else if (result == VarList.Not_Found) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseDTO(VarList.Not_Found, "User not found", null));
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new ResponseDTO(result, "Update failed", null));
+            }
+
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "File error: " + e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "Error: " + e.getMessage(), null));
+        }
+    }
     @DeleteMapping("/{userId}")
     public ResponseEntity<ResponseDTO> deleteUser(@PathVariable int userId) {
         ResponseDTO response = userService.deleteUser(userId);
@@ -111,9 +179,42 @@ public class UserController {
         }
     }
 
+    @PostMapping("/change-password")
+    public ResponseEntity<ResponseDTO> changePassword(
+            @RequestBody ChangePasswordRequestDTO request,
+            @RequestHeader("Authorization") String token) {
+
+        try {
+            // Extract token from "Bearer <token>"
+            String jwtToken = token.substring(7);
+
+            int result = userService.changePassword(jwtToken, request.getCurrentPassword(), request.getNewPassword());
+
+            if (result == VarList.Updated) {
+                return ResponseEntity.ok()
+                        .body(new ResponseDTO(VarList.Updated, "Password changed successfully", null));
+            } else if (result == VarList.Unauthorized) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ResponseDTO(VarList.Unauthorized, "Current password is incorrect", null));
+            } else if (result == VarList.Not_Found) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseDTO(VarList.Not_Found, "User not found", null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseDTO(result, "Failed to change password", null));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ResponseDTO(VarList.Internal_Server_Error,
+                            "Error: " + e.getMessage(), null));
+        }
+    }
+
+
+
+
     @GetMapping("/{userId}")
     public ResponseEntity<ResponseDTO> getUserById(@PathVariable int userId) {
-        System.out.println("===================================================");
         try {
             ResponseDTO responseDTO = userService.getUserById(userId);
             return ResponseEntity.ok()
