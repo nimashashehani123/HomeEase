@@ -1,4 +1,4 @@
-// Toggle mobile menu
+// Mobile menu toggle
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.querySelector('.nav-links');
 
@@ -6,45 +6,49 @@ hamburger.addEventListener('click', () => {
     navLinks.classList.toggle('active');
 });
 
-// Role Toggle Functionality
+// Role Toggle and Modal Control
 const roleToggle = document.getElementById('roleToggle');
 const roleLabel = document.getElementById('roleLabel');
 const providerLoginModal = document.getElementById('providerLoginModal');
 const closeModal = document.querySelector('.close');
+const providerLoginForm = document.getElementById('providerLoginForm');
 
-roleToggle.addEventListener('change', function () {
+// Toggle between customer and provider
+roleToggle.addEventListener('change', function() {
     if (this.checked) {
         roleLabel.textContent = 'Provider';
-        providerLoginModal.style.display = 'flex'; // Show the modal
+        providerLoginModal.style.display = 'flex';
     } else {
         roleLabel.textContent = 'Customer';
-        providerLoginModal.style.display = 'none'; // Hide the modal
+        providerLoginModal.style.display = 'none';
     }
 });
 
-// Close Modal
+// Close modal handlers
 closeModal.addEventListener('click', () => {
     providerLoginModal.style.display = 'none';
-    roleToggle.checked = false; // Reset the toggle
+    roleToggle.checked = false;
     roleLabel.textContent = 'Customer';
 });
 
-// Close Modal when clicking outside
 window.addEventListener('click', (event) => {
     if (event.target === providerLoginModal) {
         providerLoginModal.style.display = 'none';
-        roleToggle.checked = false; // Reset the toggle
+        roleToggle.checked = false;
         roleLabel.textContent = 'Customer';
     }
 });
 
-// Form Submission
+// Form submission handler
+providerLoginForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    login();
+});
+
+// Login function
 function login() {
-    console.log("-----------------------------------------")
     const email = document.getElementById('providerEmail').value;
     const password = document.getElementById('providerPassword').value;
-    console.log(email)
-    console.log(password)
 
     $.ajax({
         url: 'http://localhost:8080/api/v1/auth/authenticate',
@@ -54,75 +58,60 @@ function login() {
             email: email,
             password: password
         }),
-        success: function (response) {
-            alert("Login successful");
+        success: function(response) {
+            // Store token
             localStorage.setItem("token", response.data.token);
-            console.log(response.data.token)
-            // Assuming the token is stored in localStorage
-            const token = localStorage.getItem("token");
 
-            if (token) {
-                try {
-                    // Decode the token
-                    const decodedToken = jwt_decode(token);
+            // Close modal and reset toggle
+            providerLoginModal.style.display = 'none';
+            roleToggle.checked = false;
+            roleLabel.textContent = 'Customer';
 
-                    // Extract the role from the token payload
-                    const role = decodedToken.role; // Assuming the role is stored in the "role" claim
+            // Decode token and redirect
+            try {
+                const decodedToken = jwt_decode(response.data.token);
+                const role = decodedToken.role;
 
-                    console.log("Decoded Token:", decodedToken);
-                    console.log("User Role:", role);
-
-                    // Perform actions based on the role
-                    if (role === "SERVICE_PROVIDER") {
-                        console.log("User is a Service Provider");
+                switch(role) {
+                    case "SERVICE_PROVIDER":
                         window.location.href = "../view/providerdashboard.html";
-                        closeModal.addEventListener('click', () => {
-                            providerLoginModal.style.display = 'none';
-                            roleToggle.checked = false; // Reset the toggle
-                            roleLabel.textContent = 'Customer';
-                        });
-                        setTimeout(function() {
-                            window.location.href = "../view/services.html"; // Replace with your login page URL
-                        }, 500);
-                        // Redirect or show provider-specific content
-                    } else if (role === "CUSTOMER") {
-                        console.log("User is a Customer");
-                        // Redirect or show customer-specific content
-                    }  else if (role === "ADMIN") {
-                        console.log("User is a Customer");
-                        // Redirect or show customer-specific content
-                    } else {
-                        console.log("Unknown role");
-                    }
-                } catch (error) {
-                    console.error("Failed to decode token:", error);
+                        break;
+                    case "CUSTOMER":
+                        window.location.href = "../view/customerdashboard.html";
+                        break;
+                    case "ADMIN":
+                        window.location.href = "../view/admindashboard.html";
+                        break;
+                    default:
+                        alert("Unknown user role");
                 }
-            } else {
-                console.error("No token found in localStorage");
+            } catch (error) {
+                console.error("Token decode error:", error);
+                alert("Login error - please try again");
             }
-
         },
-
-        error: function (xhr, status, error) {
-            alert("Login failed")
+        error: function(xhr) {
+            let errorMsg = "Login failed";
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMsg += ": " + xhr.responseJSON.message;
+            }
+            alert(errorMsg);
         }
     });
 }
-// Contact Form Submission
-document.getElementById('contactForm').addEventListener('submit', function (e) {
-    e.preventDefault();
 
+// Contact Form Submission
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
     const message = document.getElementById('message').value;
 
-    // Basic validation
     if (!name || !email || !message) {
         alert('Please fill out all fields.');
         return;
     }
 
-    // Simulate form submission
     alert('Message sent successfully!');
-    document.getElementById('contactForm').reset(); // Clear the form
+    this.reset();
 });

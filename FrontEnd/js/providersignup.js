@@ -38,8 +38,8 @@ function providerregister() {
             console.log(response);
             console.log(response.data.email);
             console.log(response.data.token);
+            localStorage.removeItem("token");
             alert("Registration successful!...........");
-            localStorage.setItem("token", response.data.token); // token ek local eke save krnw
             setTimeout(function() {
                 window.location.href = "index.html"; // Replace with your login page URL
             }, 2000); // 2000 milliseconds = 2 seconds
