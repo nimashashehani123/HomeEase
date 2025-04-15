@@ -6,6 +6,8 @@
   <title>Services Page</title>
   <link rel="stylesheet" href="../css/service.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.5/dist/sweetalert2.min.css">
+
 
 </head>
 <body>
@@ -198,6 +200,7 @@
 
 <script src="../js/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.5/dist/sweetalert2.all.min.js"></script>
 <!--<script>// Toggle mobile menu
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.querySelector('.nav-links');
@@ -277,7 +280,6 @@ document.querySelector('a[href="#logout"]').addEventListener('click', function(e
         <li><a href="#" onclick="navigateHome()">Home</a></li>
         <li><a href="../view/services.html">Services</a></li>
         <li><a href="../view/mybookings.html">Bookings</a></li>
-        <li><a href="../view/notifications.html">Notifications</a></li>
       </ul>
       <a href="../view/profile.html" class="logout-btn">
         <i class="fas fa-user"></i> Profile
@@ -926,22 +928,67 @@ document.querySelector('a[href="#logout"]').addEventListener('click', function(e
         document.querySelector('.edit-form').remove();
       });
     }
-
     async function handleEditSubmit(e) {
       e.preventDefault();
       const form = e.target;
       const formData = new FormData(form);
 
+      // Get form values
+      const serviceName = formData.get('serviceName').trim();
+      const description = formData.get('description').trim();
+      const fixedPriceStr = formData.get('fixedPrice').trim();
+      const hourlyRateStr = formData.get('hourlyRate').trim();
+      const fileInput = form.querySelector('input[type="file"]');
+
+      // Validation checks
+      if (!serviceName) {
+        Swal.fire({ icon: 'warning', title: 'Warning', text: 'Service Name is required.' });
+        return;
+      }
+
+      if (serviceName.length > 100) {
+        Swal.fire({ icon: 'warning', title: 'Warning', text: 'Service Name cannot exceed 100 characters.' });
+        return;
+      }
+
+      if (!description) {
+        Swal.fire({ icon: 'warning', title: 'Warning', text: 'Description is required.' });
+        return;
+      }
+
+      if (description.length > 500) {
+        Swal.fire({ icon: 'warning', title: 'Warning', text: 'Description cannot exceed 500 characters.' });
+        return;
+      }
+
+      let fixedPrice = parseFloat(fixedPriceStr);
+      if (fixedPriceStr && isNaN(fixedPrice)) {
+        Swal.fire({ icon: 'warning', title: 'Warning', text: 'Fixed Price must be a valid number.' });
+        return;
+      } else if (fixedPrice < 0) {
+        Swal.fire({ icon: 'warning', title: 'Warning', text: 'Fixed Price cannot be negative.' });
+        return;
+      }
+
+      let hourlyRate = parseFloat(hourlyRateStr);
+      if (hourlyRateStr && isNaN(hourlyRate)) {
+        Swal.fire({ icon: 'warning', title: 'Warning', text: 'Hourly Rate must be a valid number.' });
+        return;
+      } else if (hourlyRate < 0) {
+        Swal.fire({ icon: 'warning', title: 'Warning', text: 'Hourly Rate cannot be negative.' });
+        return;
+      }
+
       // Create serviceDTO object from form data
       const serviceDTO = {
         serviceId: parseInt(formData.get('serviceId')),
-        serviceName: formData.get('serviceName'),
-        description: formData.get('description'),
-        fixedPrice: parseFloat(formData.get('fixedPrice')),
-        hourlyRate: parseFloat(formData.get('hourlyRate')),
+        serviceName: serviceName,
+        description: description,
+        fixedPrice: isNaN(fixedPrice) ? null : fixedPrice, // Use null if not a valid number
+        hourlyRate: isNaN(hourlyRate) ? null : hourlyRate, // Use null if not a valid number
         image: formData.get('existingImage'),
         categoryId: service1.categoryId,
-        serviceProviderId: service1.serviceProviderId// Preserve existing image by default
+        serviceProviderId: service1.serviceProviderId // Assuming service1 is defined elsewhere
       };
 
       // Create new FormData for the request
@@ -951,9 +998,20 @@ document.querySelector('a[href="#logout"]').addEventListener('click', function(e
       requestFormData.append('serviceDTO',
               new Blob([JSON.stringify(serviceDTO)], { type: 'application/json' }));
 
-      // Only append file if a new one was selected
-      const fileInput = form.querySelector('input[type="file"]');
+      // Only append file if a new one was selected and has a size greater than 0
       if (fileInput.files.length > 0 && fileInput.files[0].size > 0) {
+        // Basic file type validation (you might want to enhance this)
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(fileInput.files[0].type)) {
+          Swal.fire({ icon: 'warning', title: 'Warning', text: 'Invalid file type. Only JPEG, PNG, and GIF are allowed.' });
+          return;
+        }
+        // Basic file size validation (adjust as needed)
+        const maxSizeMB = 2;
+        if (fileInput.files[0].size > maxSizeMB * 1024 * 1024) {
+          Swal.fire({ icon: 'warning', title: 'Warning', text: `File size exceeds the limit of ${maxSizeMB}MB.` });
+          return;
+        }
         requestFormData.append('file', fileInput.files[0]);
       }
 
@@ -972,18 +1030,31 @@ document.querySelector('a[href="#logout"]').addEventListener('click', function(e
         }
 
         const result = await response.json();
-        alert(result.message || 'Service updated successfully!');
-        document.querySelector('.edit-form').remove();
-
-        // Refresh services
-        if (typeof loadServices === 'function') {
-          loadServices(activeCategoryId);
-        } else {
-          location.reload();
-        }
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: result.message || 'Service updated successfully!',
+          timer: 1500,
+          showConfirmButton: false
+        }).then(() => {
+          const editForm = document.querySelector('.edit-form');
+          if (editForm) {
+            editForm.remove();
+          }
+          // Refresh services
+          if (typeof loadServices === 'function') {
+            loadServices(activeCategoryId);
+          } else {
+            location.reload();
+          }
+        });
       } catch (error) {
         console.error('Update error:', error);
-        alert('Error updating service: ' + error.message);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Error updating service: ' + error.message,
+        });
       }
     }
 

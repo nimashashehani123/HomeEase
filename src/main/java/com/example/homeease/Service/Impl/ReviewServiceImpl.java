@@ -29,6 +29,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ResponseDTO addReview(ReviewDTO reviewDTO) {
+        // Check if review already exists for this booking
         if (reviewRepository.existsById(reviewDTO.getReviewId())) {
             return new ResponseDTO(400, "Review already exists with id: " + reviewDTO.getReviewId(), null);
         }
@@ -37,13 +38,41 @@ public class ReviewServiceImpl implements ReviewService {
         Booking booking = bookingRepository.findById(reviewDTO.getBookingId())
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + reviewDTO.getBookingId()));
 
-        // Map ReviewDTO to Review entity
-        Review review = modelMapper.map(reviewDTO, Review.class);
-        review.setBooking(booking); // Set the booking
+        // Validate booking status
+        if (!"COMPLETED".equals(booking.getStatus())) {
+            return new ResponseDTO(400, "Reviews can only be added for completed bookings", null);
+        }
 
-        reviewRepository.save(review);
+        // Validate rating
+        if (reviewDTO.getRating() < 1 || reviewDTO.getRating() > 5) {
+            return new ResponseDTO(400, "Rating must be between 1 and 5", null);
+        }
+
+        // Check if review already exists for this booking
+        if (reviewRepository.existsByBooking(booking)) {
+            return new ResponseDTO(400, "A review already exists for this booking", null);
+        }
+
+        // Map and save review
+        Review review = modelMapper.map(reviewDTO, Review.class);
+        review.setBooking(booking);
+        Review savedReview = reviewRepository.save(review);
+
         return new ResponseDTO(200, "Review added successfully", reviewDTO);
     }
+
+    @Override
+    public ResponseDTO getReviewByBookingId(int bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+
+        Review review = reviewRepository.findByBooking(booking)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found for booking id: " + bookingId));
+
+        ReviewDTO reviewDTO = modelMapper.map(review, ReviewDTO.class);
+        return new ResponseDTO(200, "Success", reviewDTO);
+    }
+
 
     @Override
     public ResponseDTO getAllReviews() {

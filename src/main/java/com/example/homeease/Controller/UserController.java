@@ -5,6 +5,7 @@ import com.example.homeease.Dto.*;
 import com.example.homeease.Service.UserService;
 import com.example.homeease.Utill.JwtUtil;
 import com.example.homeease.Utill.VarList;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,7 +37,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseDTO> addUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<ResponseDTO> addUser(@Valid @RequestBody UserDTO userDTO) {
         System.out.println("register");
         System.out.println(userDTO.getEmail());
         System.out.println(userDTO.getName());
@@ -79,7 +80,7 @@ public class UserController {
     }
 
     @GetMapping("/getidbyemail")
-    public ResponseEntity<ResponseDTO> getIdByEmail(
+    public ResponseEntity<ResponseDTO> getIdByEmail(@Valid
             @RequestParam String email) {
         try {
             ResponseDTO responseDTO = userService.getUserIdByEmail(email);
@@ -93,7 +94,7 @@ public class UserController {
     }
     @PatchMapping("/{userId}/verification")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<ResponseDTO> updateVerificationStatus(
+    public ResponseEntity<ResponseDTO> updateVerificationStatus(@Valid
             @PathVariable int userId,
             @RequestParam String status) {
 
@@ -117,7 +118,7 @@ public class UserController {
     }
 
     @PatchMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO> updateUser(
+    public ResponseEntity<ResponseDTO> updateUser(@Valid
             @RequestPart("userDTO") UserDTO userDTO,
             @RequestPart(value = "idProof", required = false) MultipartFile idProof,
             @RequestPart(value = "addressProof", required = false) MultipartFile addressProof) {
@@ -125,7 +126,7 @@ public class UserController {
         try {
             String uploadDir = "FrontEnd/view/uploads/";
 
-            // Handle ID proof update
+
             if (idProof != null && !idProof.isEmpty()) {
                 String filename = UUID.randomUUID().toString() + "_" + idProof.getOriginalFilename();
                 File directory = new File(uploadDir);
@@ -142,7 +143,7 @@ public class UserController {
                 userDTO.setIdProofPath(filename);
             }
 
-            // Handle address proof update
+
             if (addressProof != null && !addressProof.isEmpty()) {
                 String filename = UUID.randomUUID().toString() + "_" + addressProof.getOriginalFilename();
                 File directory = new File(uploadDir);
@@ -159,7 +160,7 @@ public class UserController {
                 userDTO.setAddressProofPath(filename);
             }
 
-            // Update user with partial data
+
             int result = userService.updateUserPartial(userDTO);
 
             if (result == VarList.Updated) {
@@ -184,7 +185,7 @@ public class UserController {
         }
     }
     @DeleteMapping("/{userId}")
-    public ResponseEntity<ResponseDTO> deleteUser(@PathVariable int userId) {
+    public ResponseEntity<ResponseDTO> deleteUser(@Valid @PathVariable int userId) {
         ResponseDTO response = userService.deleteUser(userId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
@@ -203,12 +204,12 @@ public class UserController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<ResponseDTO> changePassword(
+    public ResponseEntity<ResponseDTO> changePassword(@Valid
             @RequestBody ChangePasswordRequestDTO request,
             @RequestHeader("Authorization") String token) {
 
         try {
-            // Extract token from "Bearer <token>"
+
             String jwtToken = token.substring(7);
 
             int result = userService.changePassword(jwtToken, request.getCurrentPassword(), request.getNewPassword());
@@ -254,7 +255,7 @@ public class UserController {
     public ResponseEntity<ResponseDTO> toggleUserStatus(@PathVariable int userId) {
         ResponseDTO responseDTO = userService.toggleUserStatus(userId);
 
-        // Map service response to appropriate HTTP status
+
         HttpStatus httpStatus;
         switch (responseDTO.getCode()) {
             case VarList.OK:

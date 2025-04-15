@@ -4,6 +4,7 @@ import com.example.homeease.Dto.ResponseDTO;
 import com.example.homeease.Dto.CategoryDTO;
 import com.example.homeease.Service.CategoryService;
 import com.example.homeease.Utill.VarList;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,7 +30,8 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO> addCategory(
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ResponseDTO> addCategory(@Valid
             @RequestPart("categoryDTO") CategoryDTO categoryDTO,
             @RequestPart("file") MultipartFile file) {  // Changed from @RequestParam to @RequestPart
         System.out.println("Received categoryDTO: " + categoryDTO);
@@ -106,7 +108,7 @@ public class CategoryController {
 
     @GetMapping("/id-by-name")
     @PreAuthorize("hasAuthority('SERVICE_PROVIDER')")
-    public ResponseEntity<ResponseDTO> getCategoryIdByName(
+    public ResponseEntity<ResponseDTO> getCategoryIdByName(@Valid
             @RequestParam String categoryName) {
 try {
     ResponseDTO responseDTO = categoryService.getCategoryIdByName(categoryName);
@@ -122,19 +124,20 @@ try {
 
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<ResponseDTO> getCategoryById(@PathVariable int categoryId) {
+    public ResponseEntity<ResponseDTO> getCategoryById(@Valid @PathVariable int categoryId) {
         ResponseDTO response = categoryService.getCategoryById(categoryId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
     @GetMapping("/{categoryId}/has-services")
-    public ResponseEntity<Boolean> hasAssociatedServices(@PathVariable int categoryId) {
+    public ResponseEntity<Boolean> hasAssociatedServices(@Valid @PathVariable int categoryId) {
         boolean hasServices = categoryService.hasAssociatedServices(categoryId);
         return ResponseEntity.ok(hasServices);
     }
 
     @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO> updateCategory(
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ResponseDTO> updateCategory(@Valid
             @RequestPart("categoryDTO") CategoryDTO categoryDTO,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
@@ -190,7 +193,8 @@ try {
     }
 
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<ResponseDTO> deleteCategory(@PathVariable int categoryId) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ResponseDTO> deleteCategory(@Valid @PathVariable int categoryId) {
         ResponseDTO response = categoryService.deleteCategory(categoryId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }

@@ -1,36 +1,44 @@
 package com.example.homeease.Dto;
-import com.example.homeease.enums.UserRole;
-import lombok.Data;
 
-import java.util.List;
+import com.example.homeease.enums.UserRole;
+import jakarta.validation.constraints.*;
+import lombok.Data;
 
 @Data
 public class UserDTO {
 
-    private int userId; // Unique identifier for the user
+    private int userId;
 
-    private String name; // Name of the user
+    @NotBlank(message = "Name is required")
+    @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
+    private String name;
 
-    private String email; // Email of the user (unique)
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
+    private String email;
 
-    private String password; // Password of the user
+    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
+            message = "Password must contain at least one digit, one lowercase, one uppercase letter, one special character and no whitespace")
+    private String password;
 
-    private UserRole role; // Role of the user (CUSTOMER, SERVICE_PROVIDER, ADMIN)
+    private UserRole role;
 
-    private String phoneNumber; // Contact number of the user
 
-    private String address; // Address of the user
+    @Pattern(regexp = "^[0-9]{10,15}$", message = "Phone number must be 10-15 digits")
+    private String phoneNumber;
 
-    // Additional fields for Service Providers
-    private String serviceArea; // Optional: Service area for service providers
+    private String address;
 
-    // Additional fields for Admins
-    private String adminLevel; // Optional: Admin level (e.g., Super Admin, Support Admin)
+    private String serviceArea;
 
-    private String verificationStatus; // Verification status of the user (e.g., Pending, Verified)
+    private String adminLevel;
+
+    private String verificationStatus;
+
     private String status;
 
-    private String idProofPath; // Path to the ID proof document (optional)
+    private String idProofPath;
 
-    private String addressProofPath; // Path to the address proof document (optional)
+    private String addressProofPath;
 }

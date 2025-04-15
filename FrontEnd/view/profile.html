@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -404,8 +405,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-
     document.addEventListener('DOMContentLoaded', function() {
         renderNavbar();
         window.addEventListener('storage', function(e) {
@@ -414,6 +415,7 @@
             }
         });
     });
+
     function renderNavbar() {
         const token = localStorage.getItem('token');
         const navbarContainer = document.querySelector('nav.navbar .container');
@@ -421,20 +423,20 @@
         if (!token) {
             // Render the logged-out navbar
             navbarContainer.innerHTML = `
-      <a href="#" class="logo">HomeEase</a>
-      <ul class="nav-links">
-        <li><a href="../view/index.html">Home</a></li>
-        <li><a href="../view/services.html">Services</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-      <a href="../view/login.html" class="login-btn">
-        <i class="fas fa-user"></i> Login
-      </a>
-      <div class="hamburger" id="hamburger">
-        <i class="fas fa-bars"></i>
-      </div>
-    `;
+        <a href="#" class="logo">HomeEase</a>
+        <ul class="nav-links">
+          <li><a href="../view/index.html">Home</a></li>
+          <li><a href="../view/services.html">Services</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <a href="../view/login.html" class="login-btn">
+          <i class="fas fa-user"></i> Login
+        </a>
+        <div class="hamburger" id="hamburger">
+          <i class="fas fa-bars"></i>
+        </div>
+      `;
         } else {
             try {
                 // Decode the token to get the role
@@ -444,48 +446,47 @@
                 // Redirect based on role
                 if (userRole === 'ADMIN') {
                     navbarContainer.innerHTML = `
-
-    <a href="#" class="logo">HomeEase [Admin]</a>
-    <ul class="nav-links">
-      <li><a href="../view/admindashboard.html">Home</a></li>
-      <li><a href="../view/users.html">Users</a></li>
-      <li><a href="../view/services.html" style="color: white">Services</a></li>
-    </ul>
-    <a href="../view/profile.html" class="logout-btn">
-     <i class="fas fa-user"></i> Profile
-    </a>
-    <div class="hamburger" id="hamburger">
-      <i class="fas fa-bars"></i>
-    </div>
+            <a href="#" class="logo">HomeEase [Admin]</a>
+            <ul class="nav-links">
+              <li><a href="../view/admindashboard.html">Home</a></li>
+              <li><a href="../view/users.html">Users</a></li>
+              <li><a href="../view/services.html" style="color: white">Services</a></li>
+            </ul>
+            <a href="../view/profile.html" class="logout-btn">
+              <i class="fas fa-user"></i> Profile
+            </a>
+            <div class="hamburger" id="hamburger">
+              <i class="fas fa-bars"></i>
+            </div>
           `;
-                }else{
+                } else {
                     // Render the logged-in navbar
                     navbarContainer.innerHTML = `
-      <a href="#" class="logo">HomeEase</a>
-      <ul class="nav-links">
-        <li><a href="#" onclick="navigateHome()">Home</a></li>
-        <li><a href="../view/services.html">Services</a></li>
-        <li><a href="../view/mybookings.html">Bookings</a></li>
-        <li><a href="../view/notifications.html">Notifications</a></li>
-      </ul>
-      <a href="../view/profile.html" class="logout-btn">
-        <i class="fas fa-user"></i> Profile
-      </a>
-      <div class="hamburger" id="hamburger">
-        <i class="fas fa-bars"></i>
-      </div>
-    `;
+            <a href="#" class="logo">HomeEase</a>
+            <ul class="nav-links">
+              <li><a href="#" onclick="navigateHome()">Home</a></li>
+              <li><a href="../view/services.html">Services</a></li>
+              <li><a href="../view/mybookings.html">Bookings</a></li>
+              <li><a href="../view/notifications.html">Notifications</a></li>
+            </ul>
+            <a href="../view/profile.html" class="logout-btn">
+              <i class="fas fa-user"></i> Profile
+            </a>
+            <div class="hamburger" id="hamburger">
+              <i class="fas fa-bars"></i>
+            </div>
+          `;
                 }
             } catch (error) {
                 console.error('Error decoding token:', error);
                 window.location.href = 'login.html';
             }
-
         }
 
         // Re-attach event listeners after rendering
         setupNavbarEvents();
     }
+
     function setupNavbarEvents() {
         // Hamburger menu toggle
         const hamburger = document.getElementById('hamburger');
@@ -523,7 +524,11 @@
             toggleRoleSpecificFields(user.role);
         } catch (error) {
             console.error("Error initializing profile:", error);
-            alert("Failed to load profile data");
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Failed to load profile data!',
+            });
         }
     });
 
@@ -629,8 +634,7 @@
             // Show admin fields and hide others
             $('#adminLevel').text(user.adminLevel || 'N/A');
             $('#updateAdminLevel').val(user.adminLevel || '');
-        }
-        else if (user.role === 'SERVICE_PROVIDER') {
+        } else if (user.role === 'SERVICE_PROVIDER') {
             // Show service provider fields and hide admin fields
             $('#serviceArea').text(user.serviceArea || 'N/A');
             $('#updateServiceArea').val(user.serviceArea || '');
@@ -667,6 +671,30 @@
 
     async function updateProfile(e) {
         e.preventDefault();
+
+        // Validate name
+        const updateName = $('#updateName').val().trim();
+        if (!updateName) {
+            Swal.fire({ icon: 'warning', title: 'Warning', text: 'Name cannot be empty.' });
+            return;
+        }
+
+        // Validate email format (basic check)
+        const updateEmail = $('#updateEmail').val().trim();
+        if (updateEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(updateEmail)) {
+            Swal.fire({ icon: 'warning', title: 'Warning', text: 'Invalid email format.' });
+            return;
+        }
+
+        // Validate phone number (basic check for digits)
+        const updatePhone = $('#updatePhone').val().trim();
+        if (updatePhone) {
+            if (!/^\d{10}$/.test(updatePhone)) {
+                Swal.fire({ icon: 'warning', title: 'Warning', text: 'Phone number must contain exactly 10 digits.' });
+                return;
+            }
+        }
+
         const form = e.target;
         const formData = new FormData(form);
 
@@ -675,7 +703,7 @@
             userId: parseInt($('#userId').text())
         };
 
-        // Only include fields that are being updated
+        // Only include fields that are being updated and have values
         if (formData.get('updateName')) userDTO.name = formData.get('updateName');
         if (formData.get('updateEmail')) userDTO.email = formData.get('updateEmail');
         if (formData.get('updatePhone')) userDTO.phoneNumber = formData.get('updatePhone');
@@ -720,23 +748,31 @@
             }
 
             const result = await response.json();
-            alert(result.message || 'Profile updated successfully!');
-            const userEmail = getUserEmailFromToken();
-            if (!userEmail) {
-                throw new Error("User email not found in token");
-            }
-
-            const userId = await getUserIdFromEmail(userEmail);
-            const user = await getUserFromId(userId);
-            loadUserProfile(user)
-
-            const profileTab = new bootstrap.Tab($('#profile-tab')[0]);
-            profileTab.show();
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: result.message || 'Profile updated successfully!',
+            }).then(async () => {
+                const userEmail = getUserEmailFromToken();
+                if (!userEmail) {
+                    throw new Error("User email not found in token");
+                }
+                const userId = await getUserIdFromEmail(userEmail);
+                const user = await getUserFromId(userId);
+                loadUserProfile(user);
+                const profileTab = new bootstrap.Tab($('#profile-tab')[0]);
+                profileTab.show();
+            });
         } catch (error) {
             console.error('Update error:', error);
-            alert('Error updating profile: ' + error.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Error updating profile: ' + error.message,
+            });
         }
     }
+
     function isPasswordStrong(password) {
         // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
         const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
@@ -750,16 +786,31 @@
         const newPassword = $('#newPassword').val();
         const confirmPassword = $('#confirmPassword').val();
 
-        if (newPassword !== confirmPassword) {
-            alert('New passwords do not match!');
+        if (!currentPassword) {
+            Swal.fire({ icon: 'warning', title: 'Warning', text: 'Current password cannot be empty.' });
             return;
         }
 
-       /* if (!isPasswordStrong(newPassword)) {
-            alert('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number');
+        if (!newPassword) {
+            Swal.fire({ icon: 'warning', title: 'Warning', text: 'New password cannot be empty.' });
             return;
         }
-*/
+
+        if (!confirmPassword) {
+            Swal.fire({ icon: 'warning', title: 'Warning', text: 'Confirm password cannot be empty.' });
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'New passwords do not match!' });
+            return;
+        }
+
+        /* if (!isPasswordStrong(newPassword)) {
+            Swal.fire({ icon: 'warning', title: 'Warning', text: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number' });
+            return;
+        }
+    */
         $.ajax({
             url: `${API_BASE_URL}/users/change-password`,
             type: 'POST',
@@ -772,23 +823,28 @@
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
             success: function() {
-                alert('Password changed successfully!');
-                $('#passwordForm')[0].reset();
-
-                // Switch back to profile view
-                const profileTab = new bootstrap.Tab($('#profile-tab')[0]);
-                profileTab.show();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Password changed successfully!',
+                }).then(() => {
+                    $('#passwordForm')[0].reset();
+                    // Switch back to profile view
+                    const profileTab = new bootstrap.Tab($('#profile-tab')[0]);
+                    profileTab.show();
+                });
             },
             error: function(xhr) {
                 console.error('Error changing password:', xhr.responseText);
                 if (xhr.status === 401) {
-                    alert('Current password is incorrect');
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Current password is incorrect' });
                 } else {
-                    alert(xhr.responseJSON?.message || 'Failed to change password');
+                    Swal.fire({ icon: 'error', title: 'Oops...', text: xhr.responseJSON?.message || 'Failed to change password' });
                 }
             }
         });
     }
+
     function logout() {
         localStorage.removeItem('token');
         window.location.href = '../view/index.html';

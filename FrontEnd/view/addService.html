@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title> Add Service</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.5/dist/sweetalert2.min.css">
   <style>/* General Form Styling */
   #addServiceForm {
     max-width: 600px;
@@ -178,6 +179,7 @@
 </form>
 <script src="../js/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.5/dist/sweetalert2.all.min.js"></script>
 <script>
   $(document).ready(function() {
   // Load categories dropdown
@@ -269,9 +271,15 @@
         processData: false,
         contentType: false,
         success: function(response) {
-          alert('Success! Service: ' + response.data.serviceName);
+          Swal.fire({
+            icon: 'success',
+            title: 'Add Service Successful!',
+            showConfirmButton: false,
+            timer: 1500
+          }).then(() => {
+          window.location.href = '../view/services.html';
           $('#addServiceForm')[0].reset();
-          $('#imagePreview').hide();
+          $('#imagePreview').hide();});
         },
         error: function(xhr) {
           alert('Error: ' + (xhr.responseJSON?.message || 'Check console for details'));
