@@ -7,10 +7,16 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Add SweetAlert CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.5/dist/sweetalert2.min.css">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            color: #333;
         }
         .card {
             border-radius: 10px;
@@ -52,10 +58,440 @@
             font-size: 0.875em;
             display: none;
         }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(10deg, #FFD700,#e3c10e);
+            transition: all 0.3s ease-in-out;
+            color: #000;
+            padding: 0.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-radius: 0% 0% 5% 5%;
+
+
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+        }
+
+        .navbar .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: #000;
+        }
+
+        .navbar .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .navbar .nav-links a {
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .navbar .nav-links a:hover {
+            color: white;
+        }
+
+
+        /* Login Button */
+        .logout-btn {
+            background-color: white; /* Yellow accent */
+            color: #000; /* Dark text for contrast */
+            padding: 0.5rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #666666; /* Brighter yellow for hover */
+            color: white;
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar .logo {
+                font-size: 1rem;
+                font-weight: bold;
+                text-decoration: none;
+                color: #000;
+            }
+            .login-btn {
+                background-color: white; /* Yellow accent */
+                color: #000; /* Dark text for contrast */
+                padding: 0.5rem 1.5rem;
+                text-decoration: none;
+                border-radius: 5px;
+                font-size: 0.8rem;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar .logo {
+                font-size: 0.8rem;
+                font-weight: bold;
+                text-decoration: none;
+                color: #000;
+            }
+
+            .login-btn {
+                background-color: white; /* Yellow accent */
+                color: #000; /* Dark text for contrast */
+                padding: 0.5rem 1.5rem;
+                text-decoration: none;
+                border-radius: 5px;
+                font-size: 0.6rem;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+        }
+
+
+        /* Role Toggle */
+        .role-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: -2px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #fff;
+            transition: 0.4s;
+            border-radius: 20px;
+            border: 2px solid black;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: black;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #FFD700;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        #roleLabel {
+            font-size: 1rem;
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* Login Button */
+        .login-btn {
+            background-color: white; /* Yellow accent */
+            color: #000; /* Dark text for contrast */
+            padding: 0.5rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #666666; /* Brighter yellow for hover */
+            color: white;
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+
+            .navbar .logo {
+                font-size: 1rem;
+                font-weight: bold;
+                text-decoration: none;
+                color: #000;
+            }
+            #roleLabel {
+                font-size: 0.9rem;
+                color: #000;
+                font-weight: bold;
+            }
+            .login-btn {
+                background-color: white; /* Yellow accent */
+                color: #000; /* Dark text for contrast */
+                padding: 0.5rem 1.5rem;
+                text-decoration: none;
+                border-radius: 5px;
+                font-size: 0.8rem;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar .logo {
+                font-size: 0.8rem;
+                font-weight: bold;
+                text-decoration: none;
+                color: #000;
+            }
+            #roleLabel {
+                font-size: 0.7rem;
+                color: #000;
+                font-weight: bold;
+            }
+            .login-btn {
+                background-color: white; /* Yellow accent */
+                color: #000; /* Dark text for contrast */
+                padding: 0.5rem 1.5rem;
+                text-decoration: none;
+                border-radius: 5px;
+                font-size: 0.6rem;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 3rem 0 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .footer .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .footer-brand {
+            flex: 1 1 300px;
+            margin-bottom: 2rem;
+        }
+
+        .footer-title {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .footer-tagline {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            max-width: 250px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            flex: 2 1 600px;
+            justify-content: space-between;
+        }
+
+        .footer-section {
+            flex: 1 1 200px;
+            margin-bottom: 2rem;
+            padding-right: 1rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .footer-section h4::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background-color: #FFD700;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li i {
+            margin-right: 0.5rem;
+            color: #FFD700;
+            width: 20px;
+            text-align: center;
+        }
+
+        .footer-section a {
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .footer-section a:hover {
+            color: #FFD700;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+        }
+
+        .social-links {
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 50%;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background-color: #FFD700;
+            color: #2c3e50;
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .footer-legal {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .footer-legal a {
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-legal a:hover {
+            color: #FFD700;
+        }
+
+        .footer-legal span {
+            margin: 0 0.5rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+            }
+
+            .footer-section {
+                flex: 1 1 100%;
+            }
+        }
+
     </style>
 </head>
 <body>
-
+<nav class="navbar">
+    <div class="container">
+        <a href="#" class="logo">HomeEase</a>
+        <ul class="nav-links">
+            <li><a href="#" onclick="navigateHome()">Home</a></li>
+            <li><a href="../view/services.html">Services</a></li>
+            <li><a href="../view/mybookings.html">Bookings</a></li>
+        </ul>
+        <a href="../view/profile.html" class="logout-btn">
+            <i class="fas fa-user"></i> Profile
+        </a>
+        <div class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+</nav>
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -128,13 +564,106 @@
     </div>
 </div>
 
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3 class="footer-title">HomeEase</h3>
+                <p class="footer-tagline">Making your home life simpler and better</p>
+            </div>
+
+            <div class="footer-links">
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Services</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Home St, Suite 100</li>
+                        <li><i class="fas fa-phone"></i> (123) 456-7890</li>
+                        <li><i class="fas fa-envelope"></i> info@homeease.com</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="social-links">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+
+            <p class="copyright">&copy; 2023 HomeEase. All rights reserved.</p>
+
+            <div class="footer-legal">
+                <a href="#">Privacy Policy</a>
+                <span>|</span>
+                <a href="#">Terms of Service</a>
+                <span>|</span>
+                <a href="#">Sitemap</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 <!-- Add SweetAlert JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    function navigateHome() {
+        // Get the token from localStorage
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            // If no token, redirect to login
+            window.location.href = '../view/index.html';
+            return;
+        }
+
+        try {
+            // Decode the token to get the role
+            const decoded = jwt_decode(token);
+            const userRole = decoded.role; // Assuming your JWT has a 'role' claim
+
+            // Redirect based on role
+            if (userRole === 'CUSTOMER') {
+                window.location.href = '../view/index.html';
+            } else if (userRole === 'SERVICE_PROVIDER') {
+                window.location.href = '../view/providerdashboard.html';
+            } else {
+                // Default fallback if role isn't recognized
+                window.location.href = '../view/index.html';
+            }
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            window.location.href = 'login.html';
+        }
+    }
     $(document).ready(function() {
+
+
         // Get serviceId from URL
         const urlParams = new URLSearchParams(window.location.search);
         const serviceId = urlParams.get('serviceId');
