@@ -58,13 +58,13 @@ public class BookingController {
                             ResponseDTO customerResponse = userService.getUserById(booking.getCustomerId());
                             if (customerResponse.getCode() == 200) {
                                customer  = (UserDTO) customerResponse.getData();
-                                System.out.println("*********************************************************************************"+customer);
+
                             }
                             ServiceDTO service = null;
                             ResponseDTO serviceResponse = serviceService.getServiceById(booking.getServiceId());
                             if (serviceResponse.getCode() == 200) {
                                service  = (ServiceDTO) serviceResponse.getData();
-                                System.out.println("*********************************************************************************"+service);
+
                             }
 
 
@@ -94,9 +94,6 @@ public class BookingController {
         emailDto.setTo(user.getEmail());
         emailDto.setSubject("Booking Confirmation #" + bookingDTO.getBookingId());
         emailDto.setContent(emailContent);
-
-        System.out.println("======================================================================================="+emailContent);
-
         emailService.sendEmail(emailDto);
     }
 
@@ -171,19 +168,6 @@ public class BookingController {
         }
     }
 
-   /* @GetMapping("/customer/{customerId}")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'ADMIN')")
-    public ResponseEntity<ResponseDTO> getBookingsByCustomer(@PathVariable int customerId) {
-        try {
-            ResponseDTO response = bookingService.getBookingsByCustomer(customerId);
-            return ResponseEntity.status(HttpStatus.valueOf(response.getCode()))
-                    .body(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDTO(VarList.Internal_Server_Error, e.getMessage(), null));
-        }
-    }*/
-
     @GetMapping("/service/{serviceId}")
     public ResponseEntity<ResponseDTO> getBookingsByService(@Valid @PathVariable int serviceId) {
         System.out.println("fgdhfhhdh" + serviceId);
@@ -196,18 +180,6 @@ public class BookingController {
         }
     }
 
-  /*  @GetMapping("/provider/{providerId}")
-    @PreAuthorize("hasAuthority('SERVICE_PROVIDER')")
-    public ResponseEntity<ResponseDTO> getBookingsByProvider(@PathVariable int providerId) {
-        try {
-            ResponseDTO response = bookingService.getBookingsByServiceProvider(providerId);
-            return ResponseEntity.status(HttpStatus.valueOf(response.getCode()))
-                    .body(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDTO(VarList.Internal_Server_Error, e.getMessage(), null));
-        }
-    }*/
 
     @PatchMapping("/{bookingId}/status")
     public ResponseEntity<ResponseDTO> updateBookingStatus(@Valid
