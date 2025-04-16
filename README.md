@@ -24,9 +24,6 @@ Admin Dashboard: Manage users, services, bookings, and disputes.
 ---
 
 ### **🖼️ Screenshots**
-Customer View	Provider View	Admin Panel
-Customer Homepage	Provider Dashboard	Admin Panel
-(Replace with actual screenshots)
 
 ![Screenshots](https://github.com/nimashashehani123/HomeEase/blob/dfc4bef1893855852eaa732cbd6a1dd1b012b93d/Untitled%20design.png)
 
@@ -36,11 +33,11 @@ Customer Homepage	Provider Dashboard	Admin Panel
 ### **🛠️ Technologies Used**
 Frontend: HTML5, CSS3, JavaScript, Bootstrap, AJAX
 
-Backend: Java, Servlets, JSP
+Backend: Java Springboot
 
 Database: MySQL (Stores user data, services, bookings, payments)
 
-APIs: Google Maps API (location tracking), Stripe/Razorpay (payments)
+APIs: Google Maps API (location tracking), Payhere (payments)
 
 Tools: IntelliJ IDEA, Maven, Git
 
@@ -49,7 +46,7 @@ Tools: IntelliJ IDEA, Maven, Git
 ### **🎥 Demo**
 See HomeEase in action:
 Demo Video
-[![Demo Video](path/to/demo-thumbnail.png)](https://youtu.be/wJgjuU2xci0?si=WYeVb97sdU-H7-Eq )
+[![Demo Video](path/to/demo-thumbnail.png)](https://youtu.be/ioJ9tyPOCa4?si=HSZrliKirMtQUP5a )
 
 ---
 
